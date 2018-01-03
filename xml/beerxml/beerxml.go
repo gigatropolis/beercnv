@@ -93,6 +93,10 @@ type Hop struct {
 	Type          string   `xml:"TYPE"`
 	Form          string   `xml:"FORM"`
 	Hsi           string   `xml:"HSI"`
+	Humulene      float32  `xml:"HUMULENE"`
+	Caryophyllene float32  `xml:"CARYOPHYLLENE"`
+	Cohumulone    float32  `xml:"COHUMULONE"`
+	Myrcene       float32  `xml:"MYRCENE"`
 	DisplayAmount string   `xml:"DISPLAY_AMOUNT"`
 	Inventory     string   `xml:"INVENTORY"`
 	DisplayTime   string   `xml:"DISPLAY_TIME"`

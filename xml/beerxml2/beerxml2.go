@@ -96,28 +96,28 @@ type Recipe struct {
 	Fg              FinalGravity    `xml:"final_gravity"`
 }
 
-type Leaf struct {
+type InvLeaf struct {
 	XMLName xml.Name `xml:"leaf"`
 	Mass    string   `xml:"mass,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
-type Pellet struct {
+type InvPellet struct {
 	XMLName xml.Name `xml:"pellet"`
 	Mass    string   `xml:"mass,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
-type Plug struct {
+type InvPlug struct {
 	XMLName xml.Name `xml:"plug"`
 	Mass    string   `xml:"mass,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
 type InventoryHop struct {
-	Leaf   string `xml:"leaf"`
-	Pellet string `xml:"pellet"`
-	Plug   string `xml:"plug"`
+	Leaf   InvLeaf   `xml:"leaf"`
+	Pellet InvPellet `xml:"pellet"`
+	Plug   InvPlug   `xml:"plug"`
 }
 
 type Hop struct {

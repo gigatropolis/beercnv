@@ -9,8 +9,8 @@ import (
 	//"github.com/beerxml"
 	//"github.com/stone/beerxml2"
 
-	"./beerxml"
-	"./beerxml2"
+	"../xml/beerxml"
+	"../xml/beerxml2"
 )
 
 func main() {
@@ -37,7 +37,7 @@ func main() {
 
 	//filename := "include-hops.xml"
 	//filename := "2017-09-24 UB Blonde Test #3_xml.xml"
-	filename := "nhc_2015.xml"
+	filename := "Recipies\\xml\\nhc_2015.xml"
 	buf, err := ioutil.ReadFile(filename)
 
 	if err != nil {
@@ -77,7 +77,11 @@ func main() {
 
 		for _, hop := range recipe.Hops {
 
+			invHop := beerxml2.Hop{}
+			invHop.Inventory = beerxml2.InventoryHop{}
 			recHop := beerxml2.HopAddition{}
+
+			recHop.Name = hop.Name
 			recHop.Origin = hop.Origin
 			recHop.AlphaAcidUnits = hop.Alpha
 			recHop.Use = hop.Use
@@ -98,6 +102,18 @@ func main() {
 			recHop.Amount = recMass
 
 			recIng.Hops = append(recIng.Hops, recHop)
+
+			recHop.Name = hop.Name
+			invHop.Origin = hop.Origin
+			invHop.AlphaAcidUnits = hop.Alpha
+			invHop.BetaAcidUnits = hop.Bets
+			invHop.Form = hop.Form
+			invHop.Type = hop.Type
+			invHop.Notes = hop.Notes
+			invHop.Humulene = hop.Humulene
+			invHop.Caryophyllene = hop.Caryophyllene
+			invHop.Cohumulone = hop.Cohumulone
+			invHop.Myrcene = hop.Myrcene
 
 			fmt.Printf("HOP:%s amt:%f t: %s\n", hop.Name, hop.Amount, hop.Time)
 		}
