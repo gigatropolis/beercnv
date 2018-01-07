@@ -7,27 +7,24 @@
 package beerxml2
 
 import (
+	"../../xml/beerxml"
 	"encoding/xml"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
+	"strconv"
 )
 
-type MinScale struct {
-	XMLName xml.Name `xml:"minimum"`
+type Color struct {
+	XMLName xml.Name `xml:"color"`
 	Scale   string   `xml:"scale,attr"`
-	Minimum float32  `xml:",chardata"`
-}
-
-type MaxScale struct {
-	XMLName xml.Name `xml:"maximum"`
-	Scale   string   `xml:"scale,attr"`
-	Maximum float32  `xml:",chardata"`
+	Color   float32  `xml:",chardata"`
 }
 
 type ColorScale struct {
-	Minimum MinScale `xml:"minimum"`
-	Maximum MaxScale `xml:"maximum"`
+	Minimum Color `xml:"minimum"`
+	Maximum Color `xml:"maximum"`
 }
 
 type VolAmount struct {
@@ -143,6 +140,12 @@ type MassAmount struct {
 	Amount  float32  `xml:",chardata"`
 }
 
+type InventoryAmount struct {
+	XMLName xml.Name `xml:"inventory"`
+	Mass    string   `xml:"mass,attr"`
+	Amount  float32  `xml:",chardata"`
+}
+
 type HopTime struct {
 	XMLName  xml.Name `xml:"time"`
 	Duration string   `xml:"duration,attr"`
@@ -162,34 +165,34 @@ type HopAddition struct {
 }
 
 type Yield struct {
-	FineGrind      string `xml:"fine_grind"`
-	CoarseFineDiff string `xml:"fine_coarse_difference"`
+	FineGrind      float32 `xml:"fine_grind"`
+	CoarseFineDiff float32 `xml:"fine_coarse_difference"`
 }
 
 type Fermentable struct {
-	XMLName        xml.Name   `xml:"fermentable"`
-	Name           string     `xml:"name"`
-	Type           string     `xml:"type"`
-	Color          ColorScale `xml:"color"`
-	Origin         string     `xml:"origin"`
-	Supplier       string     `xml:"supplier"`
-	YieldDryBasis  Yield      `xml:"yield_dry_basis"`
-	Notes          string     `xml:"notes"`
-	Moisture       float32    `xml:"moisture"`
-	DiastaticPower float32    `xml:"diastatic_power"`
-	Protein        float32    `xml:"protien"`
-	MaxInBatch     float32    `xml:"max_in_batch"`
-	RecommendMash  bool       `xml:"recommended_mash"`
-	IbuGalPerLb    float32    `xml:"ibu_gal_per_lb"`
-	Inventory      string     `xml:"inventory"`
-	Potential      float32    `xml:"potential"`
+	XMLName        xml.Name        `xml:"fermentable"`
+	Name           string          `xml:"name"`
+	Type           string          `xml:"type"`
+	Color          Color           `xml:"color"`
+	Origin         string          `xml:"origin"`
+	Supplier       string          `xml:"supplier"`
+	YieldDryBasis  Yield           `xml:"yield_dry_basis"`
+	Notes          string          `xml:"notes"`
+	Moisture       float32         `xml:"moisture"`
+	DiastaticPower float32         `xml:"diastatic_power"`
+	Protein        float32         `xml:"protien"`
+	MaxInBatch     float32         `xml:"max_in_batch"`
+	RecommendMash  bool            `xml:"recommended_mash"`
+	IbuGalPerLb    float32         `xml:"ibu_gal_per_lb"`
+	Inventory      InventoryAmount `xml:"inventory"`
+	Potential      float32         `xml:"potential"`
 }
 
 type FermAddition struct {
 	XMLName      xml.Name   `xml:"fermentable"`
 	Name         string     `xml:"name"`
 	Type         string     `xml:"type"`
-	Color        ColorScale `xml:"color"`
+	Color        Color      `xml:"color"`
 	Origin       string     `xml:"origin"`
 	Supplier     string     `xml:"supplier"`
 	Amount       MassAmount `xml:"amount"`
@@ -495,6 +498,209 @@ type MiscAdditions struct {
 	Amount         VolAmount    `xml:"amount"`
 	AmountAsWeight WeightAmount `xml:"amount_as_weight"`
 	Time           string       `xml:"time"`
+}
+
+func (xml *BeerXml2) Init() {
+	xml.Version = "2.0"
+}
+
+func getInventoryHop(invHops []Hop, hopName string) *Hop {
+	for index := range invHops {
+		if invHops[index].Name == hopName {
+			return &(invHops[index])
+		}
+	}
+	return nil
+}
+
+func getInventoryFermentable(invFerms []Fermentable, fermName string) *Fermentable {
+	for index := range invFerms {
+		if invFerms[index].Name == fermName {
+			return &(invFerms[index])
+		}
+	}
+	return nil
+}
+
+func (inv *InventoryHop) AddHopAmount(amount float32, mass string, form string) {
+
+	if form == "Pellet" {
+		inv.Pellet.Mass = mass
+		inv.Pellet.Amount += amount
+	} else if form == "Leaf" {
+		inv.Leaf.Mass = mass
+		inv.Leaf.Amount += amount
+	} else if form == "Plug" {
+		inv.Plug.Mass = mass
+		inv.Plug.Amount += amount
+	} else {
+		fmt.Println("cant find form ", form)
+	}
+}
+
+func (inv *InventoryAmount) AddFermentationAmount(amount float32, mass string) {
+	//inv.Mass = mass
+	inv.Amount += amount
+}
+
+func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
+
+	//beer2 := beerxml2.BeerXml2{}
+	beer := beerxml.BeerXml{}
+
+	//filename := "Recipies\\xml\\nhc_2015.xml"
+	buf, err := ioutil.ReadFile(filename)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = xml.Unmarshal(buf, &beer)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, recipe := range beer.Recipes {
+
+		rec := Recipe{}
+		recIng := RecIngredients{}
+
+		rec.Name = recipe.Name
+		rec.Type = recipe.Type
+		rec.Brewer = recipe.Brewer
+		rec.AssistantBrewer = recipe.AssistantBrewer
+		rec.BatchSize = recipe.BatchSize
+		rec.BoilSize = recipe.BoilSize
+		rec.BoilTime = recipe.BoilTime
+		rec.Efficiency = recipe.Efficiency
+		rec.Notes = recipe.Notes
+
+		recOg := OriginalGravity{}
+		recOg.Density = "sg"
+		recOg.Og = recipe.Og
+		rec.Og = recOg
+
+		recFg := FinalGravity{}
+		recFg.Density = "sg"
+		recFg.Fg = recipe.Fg
+		rec.Fg = recFg
+
+		for _, hop := range recipe.Hops {
+
+			recHop := HopAddition{}
+
+			recHop.Name = hop.Name
+			recHop.Origin = hop.Origin
+			recHop.AlphaAcidUnits = hop.Alpha
+			recHop.Use = hop.Use
+			recHop.Form = hop.Form
+
+			hopTime := HopTime{}
+			hopTime.Duration = "min"
+			fTime, err := strconv.ParseFloat(hop.Time, 32)
+			if err != nil {
+				fmt.Println(err)
+			}
+			hopTime.Time = float32(fTime)
+			recHop.Time = hopTime
+
+			recMass := MassAmount{}
+			recMass.Mass = "Kg"
+			recMass.Amount = hop.Amount
+			recHop.Amount = recMass
+
+			recIng.Hops = append(recIng.Hops, recHop)
+
+			var pInvHop *Hop = nil
+			pInvHop = getInventoryHop(beer2.HopVarieties, hop.Name)
+
+			if pInvHop != nil {
+				pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
+			} else {
+				pInvHop = new(Hop)
+				pInvHop.Name = hop.Name
+				pInvHop.Origin = hop.Origin
+				pInvHop.AlphaAcidUnits = hop.Alpha
+				pInvHop.BetaAcidUnits = hop.Beta
+
+				pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
+				pInvHop.Type = hop.Type
+				pInvHop.Notes = hop.Notes
+				pInvHop.Humulene = hop.Humulene
+				pInvHop.Caryophyllene = hop.Caryophyllene
+				pInvHop.Cohumulone = hop.Cohumulone
+				pInvHop.Myrcene = hop.Myrcene
+
+				beer2.HopVarieties = append(beer2.HopVarieties, *pInvHop)
+			}
+
+			fmt.Printf("HOP:%s amt:%f t: %s\n", hop.Name, hop.Amount, hop.Time)
+			fmt.Printf("HopCount = %d", len(recIng.Hops))
+
+		}
+
+		for _, ferm := range recipe.Fermentables {
+
+			recFerm := FermAddition{}
+
+			recFerm.Name = ferm.Name
+			recFerm.Type = ferm.Type
+			recFerm.Origin = ferm.Origin
+			recFerm.Supplier = ferm.Supplier
+			recFerm.AddAfterBoil = ferm.AddAfterBoil
+
+			if ferm.Type == "Extract" {
+				recFerm.Color.Scale = "SRM"
+			} else {
+				recFerm.Color.Scale = "L"
+			}
+			recFerm.Color.Color = ferm.Color
+
+			recFerm.Amount.Mass = "Kg"
+			recFerm.Amount.Amount = ferm.Amount
+
+			recIng.Fermentables = append(recIng.Fermentables, recFerm)
+
+			var pInvFerm *Fermentable = nil
+			pInvFerm = getInventoryFermentable(beer2.Fermentables, ferm.Name)
+
+			if pInvFerm != nil {
+				pInvFerm.Inventory.AddFermentationAmount(ferm.Amount, "Kg")
+			} else {
+				pInvFerm = new(Fermentable)
+
+				pInvFerm.Name = ferm.Name
+				pInvFerm.Type = ferm.Type
+				pInvFerm.Origin = ferm.Origin
+				pInvFerm.Supplier = ferm.Supplier
+				pInvFerm.Notes = ferm.Notes
+
+				pInvFerm.Color.Scale = recFerm.Color.Scale
+				pInvFerm.Color.Color = ferm.Color
+
+				pInvFerm.YieldDryBasis.FineGrind = ferm.Yield
+				pInvFerm.YieldDryBasis.CoarseFineDiff = ferm.CoarseFineDiff
+				pInvFerm.Notes = ferm.Notes
+				pInvFerm.Moisture = ferm.Moisture
+				pInvFerm.DiastaticPower = ferm.DiastaticPower
+				pInvFerm.Protein = ferm.Protein
+				pInvFerm.MaxInBatch = ferm.MaxInBatch
+				pInvFerm.RecommendMash = ferm.RecommendMash
+				pInvFerm.IbuGalPerLb = ferm.IbuGalPerLb
+				pInvFerm.Potential = ferm.Potential
+
+				beer2.Fermentables = append(beer2.Fermentables, *pInvFerm)
+			}
+
+		}
+
+		rec.Ingredients = recIng
+
+		beer2.Recipes = append(beer2.Recipes, rec)
+	}
+
+	return nil
 }
 
 // NewBeerXml takes a io.Reader and returns Recipes

@@ -114,10 +114,10 @@ type Fermentable struct {
 	Origin            string   `xml:"ORIGIN"`
 	Supplier          string   `xml:"SUPPLIER"`
 	Notes             string   `xml:"NOTES"`
-	CoarseFineDiff    string   `xml:"COARSE_FINE_DIFF"`
-	Moisture          string   `xml:"MOISTURE"`
-	DiastaticPower    string   `xml:"DIASTATIC_POWER"`
-	Protein           string   `xml:"PROTEIN"`
+	CoarseFineDiff    float32  `xml:"COARSE_FINE_DIFF"`
+	Moisture          float32  `xml:"MOISTURE"`
+	DiastaticPower    float32  `xml:"DIASTATIC_POWER"`
+	Protein           float32  `xml:"PROTEIN"`
 	MaxInBatch        float32  `xml:"MAX_IN_BATCH"`
 	RecommendMash     bool     `xml:"RECOMMEND_MASH"`
 	IbuGalPerLb       float32  `xml:"IBU_GAL_PER_LB"`
