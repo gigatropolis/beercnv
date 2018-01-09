@@ -35,15 +35,6 @@ func main() {
 		panic(err)
 	}
 
-	for _, misc := range recipe.miscentables {
-
-		recMisc := miscAddition{}
-
-		recMisc.Name = misc.Name
-		recMisc.Type = misc.Type
-		recMisc.Origin = misc.Origin
-	}
-
 	output, err := xml.MarshalIndent(beer2, "  ", "   ")
 
 	if err != nil {

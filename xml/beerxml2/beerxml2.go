@@ -146,7 +146,7 @@ type InventoryAmount struct {
 	Amount  float32  `xml:",chardata"`
 }
 
-type HopTime struct {
+type UseTime struct {
 	XMLName  xml.Name `xml:"time"`
 	Duration string   `xml:"duration,attr"`
 	Time     float32  `xml:",chardata"`
@@ -161,7 +161,7 @@ type HopAddition struct {
 	Form           string     `xml:"form"`
 	Use            string     `xml:"use"`
 	Amount         MassAmount `xml:"amount"`
-	Time           HopTime    `xml:"time"`
+	Time           UseTime    `xml:"time"`
 }
 
 type Yield struct {
@@ -476,8 +476,8 @@ type WaterAddition struct {
 }
 
 type InventoryMisc struct {
-	Amount         float32 `xml:"amount"`
-	AmountAsWeight bool    `xml:"amount_as_weight"`
+	Amount         VolAmount    `xml:"amount"`
+	AmountAsWeight WeightAmount `xml:"amount_as_weight"`
 }
 
 type Misc struct {
@@ -497,7 +497,7 @@ type MiscAdditions struct {
 	Use            string       `xml:"use"`
 	Amount         VolAmount    `xml:"amount"`
 	AmountAsWeight WeightAmount `xml:"amount_as_weight"`
-	Time           string       `xml:"time"`
+	Time           UseTime      `xml:"time"`
 }
 
 func (xml *BeerXml2) Init() {
@@ -508,6 +508,15 @@ func getInventoryHop(invHops []Hop, hopName string) *Hop {
 	for index := range invHops {
 		if invHops[index].Name == hopName {
 			return &(invHops[index])
+		}
+	}
+	return nil
+}
+
+func getInventoryMisc(invMisc []Misc, miscName string) *Misc {
+	for index := range invMisc {
+		if invMisc[index].Name == miscName {
+			return &(invMisc[index])
 		}
 	}
 	return nil
@@ -541,6 +550,16 @@ func (inv *InventoryHop) AddHopAmount(amount float32, mass string, form string) 
 func (inv *InventoryAmount) AddFermentationAmount(amount float32, mass string) {
 	//inv.Mass = mass
 	inv.Amount += amount
+}
+
+func (inv *InventoryMisc) AddMiscVolAmount(amount float32, volume string) {
+	inv.Amount.Volume = volume
+	inv.Amount.Amount += amount
+}
+
+func (inv *InventoryMisc) AddMiscMassAmount(amount float32, mass string) {
+	inv.AmountAsWeight.Mass = mass
+	inv.AmountAsWeight.Weight += amount
 }
 
 func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
@@ -596,7 +615,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recHop.Use = hop.Use
 			recHop.Form = hop.Form
 
-			hopTime := HopTime{}
+			hopTime := UseTime{}
 			hopTime.Duration = "min"
 			fTime, err := strconv.ParseFloat(hop.Time, 32)
 			if err != nil {
@@ -693,6 +712,46 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 				beer2.Fermentables = append(beer2.Fermentables, *pInvFerm)
 			}
 
+		}
+
+		for _, misc := range recipe.Miscs {
+
+			recMisc := MiscAdditions{}
+
+			recMisc.Name = misc.Name
+			recMisc.Type = misc.Type
+			recMisc.Use = misc.Use
+
+			if misc.AmountIsWeight {
+				recMisc.Amount.Volume = "Kg"
+				recMisc.Amount.Amount = misc.Amount
+			} else {
+				recMisc.AmountAsWeight.Mass = "l"
+				recMisc.AmountAsWeight.Weight = misc.Amount
+			}
+
+			recMisc.Time.Duration = "min"
+			recMisc.Time.Time = misc.Time
+
+			var pInvMisc *Misc = nil
+			pInvMisc = getInventoryMisc(beer2.Miscs, misc.Name)
+
+			if pInvMisc == nil {
+
+				pInvMisc.Name = misc.Name
+				pInvMisc.Type = misc.Type
+				pInvMisc.Use = misc.Use
+				pInvMisc.UseFor = misc.UseFor
+				pInvMisc.Notes = misc.Notes
+			}
+
+			if misc.AmountIsWeight {
+				pInvMisc.Inventory.AddMiscMassAmount(misc.Amount, "Kg")
+			} else {
+				pInvMisc.Inventory.AddMiscVolAmount(misc.Amount, "l")
+			}
+
+			beer2.Miscs = append(beer2.Miscs, *pInvMisc)
 		}
 
 		rec.Ingredients = recIng
