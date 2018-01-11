@@ -465,14 +465,15 @@ type Water struct {
 }
 
 type WaterAddition struct {
-	XMLName     xml.Name `xml:"water"`
-	Name        string   `xml:"name"`
-	Calcium     float32  `xml:"calcium"`
-	Bicarbonate float32  `xml:"bicarbonate"`
-	Sulfate     float32  `xml:"sulfate"`
-	Chloride    float32  `xml:"chloride"`
-	Sodium      float32  `xml:"sodium"`
-	Magnesium   float32  `xml:"magnesium"`
+	XMLName     xml.Name  `xml:"water"`
+	Name        string    `xml:"name"`
+	Calcium     float32   `xml:"calcium"`
+	Bicarbonate float32   `xml:"bicarbonate"`
+	Sulfate     float32   `xml:"sulfate"`
+	Chloride    float32   `xml:"chloride"`
+	Sodium      float32   `xml:"sodium"`
+	Magnesium   float32   `xml:"magnesium"`
+	Amount      VolAmount `xml:"amount"`
 }
 
 type InventoryMisc struct {
@@ -526,6 +527,15 @@ func getInventoryFermentable(invFerms []Fermentable, fermName string) *Fermentab
 	for index := range invFerms {
 		if invFerms[index].Name == fermName {
 			return &(invFerms[index])
+		}
+	}
+	return nil
+}
+
+func getInventoryWater(invWaterc []Water, waterName string) *Water {
+	for index := range invWaterc {
+		if invWaterc[index].Name == waterName {
+			return &(invWaterc[index])
 		}
 	}
 	return nil
@@ -634,9 +644,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			var pInvHop *Hop = nil
 			pInvHop = getInventoryHop(beer2.HopVarieties, hop.Name)
 
-			if pInvHop != nil {
-				pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
-			} else {
+			if pInvHop == nil {
 				pInvHop = new(Hop)
 				pInvHop.Name = hop.Name
 				pInvHop.Origin = hop.Origin
@@ -653,6 +661,8 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 				beer2.HopVarieties = append(beer2.HopVarieties, *pInvHop)
 			}
+
+			pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
 
 			fmt.Printf("HOP:%s amt:%f t: %s\n", hop.Name, hop.Amount, hop.Time)
 			fmt.Printf("HopCount = %d", len(recIng.Hops))
@@ -684,9 +694,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			var pInvFerm *Fermentable = nil
 			pInvFerm = getInventoryFermentable(beer2.Fermentables, ferm.Name)
 
-			if pInvFerm != nil {
-				pInvFerm.Inventory.AddFermentationAmount(ferm.Amount, "Kg")
-			} else {
+			if pInvFerm == nil {
 				pInvFerm = new(Fermentable)
 
 				pInvFerm.Name = ferm.Name
@@ -712,6 +720,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 				beer2.Fermentables = append(beer2.Fermentables, *pInvFerm)
 			}
 
+			pInvFerm.Inventory.AddFermentationAmount(ferm.Amount, "Kg")
 		}
 
 		for _, misc := range recipe.Miscs {
@@ -752,6 +761,39 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			}
 
 			beer2.Miscs = append(beer2.Miscs, *pInvMisc)
+		}
+
+		for _, water := range recipe.Waters {
+
+			recWater := WaterAddition{}
+
+			recWater.Name = water.Name
+			recWater.Calcium = water.Calcium
+			recWater.Bicarbonate = water.Bicarbonate
+			recWater.Sulfate = water.Sulfate
+			recWater.Chloride = water.Chloride
+			recWater.Sodium = water.Sodium
+			recWater.Magnesium = water.Magnesium
+			recWater.Amount.Volume = "l"
+			recWater.Amount.Amount = water.Amount
+
+			var pInvWater *Water = nil
+			pInvWater = getInventoryWater(beer2.Profiles, water.Name)
+
+			if pInvWater == nil {
+
+				pInvWater = new(Water)
+				pInvWater.Name = water.Name
+				pInvWater.Calcium = water.Calcium
+				pInvWater.Bicarbonate = water.Bicarbonate
+				pInvWater.Sulfate = water.Sulfate
+				pInvWater.Chloride = water.Chloride
+				pInvWater.Sodium = water.Sodium
+				pInvWater.Magnesium = water.Magnesium
+				pInvWater.Ph = water.Ph
+				pInvWater.Notes = water.Notes
+				beer2.Profiles = append(beer2.Profiles, *pInvWater)
+			}
 		}
 
 		rec.Ingredients = recIng

@@ -35,6 +35,7 @@ type Recipe struct {
 	Fermentables         []Fermentable `xml:"FERMENTABLES>FERMENTABLE"`
 	Miscs                []Misc        `xml:"MISCS>MISC"`
 	Yeasts               []Yeast       `xml:"YEASTS>YEAST"`
+	Waters               []Water       `xml:"WATERS>WATER"`
 	Style                Style         `xml:"STYLE"`
 	Equipment            Equipment     `xml:"EQUIPMENT"`
 	Mash                 Mash          `xml:"MASH"`
@@ -76,7 +77,6 @@ type Recipe struct {
 	DisplaySecondaryTemp string        `xml:"DISPLAY_SECONDARY_TEMP"`
 	DisplayTertiaryTemp  string        `xml:"DISPLAY_TERTIARY_TEMP"`
 	DisplayAgeTemp       string        `xml:"DISPLAY_AGE_TEMP"`
-	Waters               []Water       `xml:"WATERS>WATER"`
 }
 
 type Hop struct {
