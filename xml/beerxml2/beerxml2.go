@@ -206,7 +206,7 @@ type AlcTolerence struct {
 
 type LiquidAmount struct {
 	XMLName xml.Name `xml:"liquid"`
-	Mass    string   `xml:"mass,attr"`
+	Volume  string   `xml:"volume,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
@@ -218,13 +218,14 @@ type DryAmount struct {
 
 type SlantAmount struct {
 	XMLName xml.Name `xml:"slant"`
-	Mass    string   `xml:"mass,attr"`
+	Volume  string   `xml:"volume,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
 type CultureAmount struct {
 	XMLName xml.Name `xml:"culture"`
-	Mass    string   `xml:"mass,attr"`
+	Volume  string   `xml:"volume,attr"`
+	Date    string   `xml:"date,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
@@ -237,14 +238,14 @@ type YeastInventory struct {
 
 type MinTemp struct {
 	XMLName xml.Name `xml:"minimum"`
-	Temp    string   `xml:"Temp,attr"`
-	Minimum float32  `xml:",chardata"`
+	Degrees string   `xml:",Degrees,attr"`
+	Temp    float32  `xml:",chardata"`
 }
 
 type MaxTemp struct {
 	XMLName xml.Name `xml:"maximum"`
-	Temp    string   `xml:"Temp,attr"`
-	Maximum float32  `xml:",chardata"`
+	Degrees string   `xml:",Degrees,attr"`
+	Temp    float32  `xml:",chardata"`
 }
 
 type TempRange struct {
@@ -532,10 +533,19 @@ func getInventoryFermentable(invFerms []Fermentable, fermName string) *Fermentab
 	return nil
 }
 
-func getInventoryWater(invWaterc []Water, waterName string) *Water {
-	for index := range invWaterc {
-		if invWaterc[index].Name == waterName {
-			return &(invWaterc[index])
+func getInventoryWater(invWater []Water, waterName string) *Water {
+	for index := range invWater {
+		if invWater[index].Name == waterName {
+			return &(invWater[index])
+		}
+	}
+	return nil
+}
+
+func getInventoryYeast(invYeast []Yeast, yeastName string) *Yeast {
+	for index := range invYeast {
+		if invYeast[index].Name == yeastName {
+			return &(invYeast[index])
 		}
 	}
 	return nil
@@ -742,6 +752,8 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recMisc.Time.Duration = "min"
 			recMisc.Time.Time = misc.Time
 
+			recIng.Miscs = append(recIng.Miscs, recMisc)
+
 			var pInvMisc *Misc = nil
 			pInvMisc = getInventoryMisc(beer2.Miscs, misc.Name)
 
@@ -777,6 +789,8 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recWater.Amount.Volume = "l"
 			recWater.Amount.Amount = water.Amount
 
+			recIng.Waters = append(recIng.Waters, recWater)
+
 			var pInvWater *Water = nil
 			pInvWater = getInventoryWater(beer2.Profiles, water.Name)
 
@@ -793,6 +807,71 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 				pInvWater.Ph = water.Ph
 				pInvWater.Notes = water.Notes
 				beer2.Profiles = append(beer2.Profiles, *pInvWater)
+			}
+		}
+
+		for _, yeast := range recipe.Yeasts {
+
+			recYeast := YeastAdditions{}
+
+			recYeast.Name = yeast.Name
+			recYeast.Type = yeast.Type
+			recYeast.Form = yeast.Form
+			recYeast.Laboratory = yeast.Laboratory
+			recYeast.ProductID = yeast.ProductID
+			recYeast.AddToSecondary = yeast.AddToSecondary
+
+			if yeast.AmountIsWeight {
+				recYeast.AmountAsWeight.Mass = "Kg"
+				recYeast.AmountAsWeight.Weight = yeast.Amount
+			} else {
+				recYeast.Amount.Volume = "l"
+				recYeast.Amount.Amount = yeast.Amount
+			}
+
+			recYeast.TimesCultured = yeast.TimesCultured
+
+			recIng.Yeasts = append(recIng.Yeasts, recYeast)
+
+			var pInvYeast *Yeast = nil
+			pInvYeast = getInventoryYeast(beer2.Cultures, yeast.Name)
+
+			if pInvYeast != nil {
+
+				if yeast.AmountIsWeight {
+					pInvYeast.Inventory.Dry.Mass = "Kg"
+					pInvYeast.Inventory.Dry.Amount += yeast.Amount
+				} else {
+					pInvYeast.Inventory.Liquid.Volume = "l"
+					pInvYeast.Inventory.Liquid.Amount += yeast.Amount
+				}
+			} else {
+
+				pInvYeast = new(Yeast)
+
+				pInvYeast.Name = yeast.Name
+				pInvYeast.Type = yeast.Type
+				pInvYeast.Form = yeast.Form
+				pInvYeast.Laboratory = yeast.Laboratory
+				pInvYeast.ProductID = yeast.ProductID
+
+				pInvYeast.TemperatureRange.Minimum.Degrees = "C"
+				pInvYeast.TemperatureRange.Minimum.Temp = yeast.MaxTemperature
+				pInvYeast.TemperatureRange.Maximum.Degrees = "C"
+				pInvYeast.TemperatureRange.Maximum.Temp = yeast.MaxTemperature
+
+				pInvYeast.Flocculation = yeast.Flocculation
+				pInvYeast.Attenuation = yeast.Attenuation
+				pInvYeast.Notes = yeast.Notes
+				pInvYeast.BestFor = yeast.BestFor
+				pInvYeast.MaxReuse = yeast.MaxReuse
+				pInvYeast.BestFor = yeast.BestFor
+
+				if yeast.CultureDate == "" {
+					pInvYeast.Inventory.Culture.Date = yeast.CultureDate
+				}
+
+				beer2.Cultures = append(beer2.Cultures, *pInvYeast)
 			}
 		}
 

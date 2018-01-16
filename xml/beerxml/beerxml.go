@@ -133,11 +133,11 @@ type Yeast struct {
 	Name           string   `xml:"NAME"`
 	Version        int      `xml:"VERSION"`
 	Type           string   `xml:"TYPE"`
-	From           string   `xml:"FROM"`
+	Form           string   `xml:"FROM"`
 	Amount         float32  `xml:"AMOUNT"`
 	AmountIsWeight bool     `xml:"AMOUNT_IS_WEIGHT"`
 	Laboratory     string   `xml:"LABORATORY"`
-	ProductId      string   `xml:"PRODUCT_ID"`
+	ProductID      string   `xml:"PRODUCT_ID"`
 	MinTemperature float32  `xml:"MIN_TEMPERATURE"`
 	MaxTemperature float32  `xml:"MAX_TEMPERATURE"`
 	Flocculation   string   `xml:"FLOCCULATION"`
