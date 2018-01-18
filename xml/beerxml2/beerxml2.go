@@ -398,19 +398,19 @@ type RampDur struct {
 }
 
 type StepDeg struct {
-	XMLName xml.Name `xml:"step_tempurature"`
+	XMLName xml.Name `xml:"step_temperature"`
 	Degrees string   `xml:"degrees,attr"`
 	Time    float32  `xml:",chardata"`
 }
 
 type EndDeg struct {
-	XMLName xml.Name `xml:"end_tempurature"`
+	XMLName xml.Name `xml:"end_temperature"`
 	Degrees string   `xml:"degrees,attr"`
 	Time    float32  `xml:",chardata"`
 }
 
 type InfuseDeg struct {
-	XMLName xml.Name `xml:"infuse_tempurature"`
+	XMLName xml.Name `xml:"infuse_temperature"`
 	Degrees string   `xml:"degrees,attr"`
 	Time    float32  `xml:",chardata"`
 }
@@ -420,18 +420,18 @@ type MashStep struct {
 	Name            string    `xml:"name"`
 	Type            string    `xml:"type"`
 	InfuseAmount    InfuseVol `xml:"infuse_amount"`
-	StepTemp        StepDeg   `xml:"step_tempurature"`
+	StepTemp        StepDeg   `xml:"step_temperature"`
 	StepTime        StepDur   `xml:"step_time"`
 	RampTime        RampDur   `xml:"ramp_time"`
-	EndTemp         EndDeg    `xml:"end_tempurature"`
+	EndTemp         EndDeg    `xml:"end_temperature"`
 	Description     string    `xml:"description"`
 	WaterGrainRatio string    `xml:"water_grain_ratio"`
 	DecotionAmt     DecVol    `xml:"decoction_amount"`
-	InfuseTemp      InfuseDeg `xml:"infuse_tempurature"`
+	InfuseTemp      InfuseDeg `xml:"infuse_temperature"`
 }
 
 type GrainDeg struct {
-	XMLName xml.Name `xml:"grain_tempurature"`
+	XMLName xml.Name `xml:"grain_temperature"`
 	Degrees string   `xml:"degrees,attr"`
 	Time    float32  `xml:",chardata"`
 }
@@ -445,7 +445,7 @@ type SpargeDeg struct {
 type Mash struct {
 	XMLName    xml.Name   `xml:"mash"`
 	Name       string     `xml:"name"`
-	GrainTemp  GrainDeg   `xml:"grain_tempurature"`
+	GrainTemp  GrainDeg   `xml:"grain_temperature"`
 	SpargeTemp SpargeDeg  `xml:"sparge_temperature"`
 	Ph         float32    `xml:"pH"`
 	Notes      string     `xml:"notes"`
@@ -546,6 +546,15 @@ func getInventoryYeast(invYeast []Yeast, yeastName string) *Yeast {
 	for index := range invYeast {
 		if invYeast[index].Name == yeastName {
 			return &(invYeast[index])
+		}
+	}
+	return nil
+}
+
+func getInventoryStyle(invStyle []Style, styleName string) *Style {
+	for index := range invStyle {
+		if invStyle[index].Name == styleName {
+			return &(invStyle[index])
 		}
 	}
 	return nil
@@ -759,6 +768,8 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			if pInvMisc == nil {
 
+				pInvMisc = new(Misc)
+
 				pInvMisc.Name = misc.Name
 				pInvMisc.Type = misc.Type
 				pInvMisc.Use = misc.Use
@@ -836,16 +847,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			var pInvYeast *Yeast = nil
 			pInvYeast = getInventoryYeast(beer2.Cultures, yeast.Name)
 
-			if pInvYeast != nil {
-
-				if yeast.AmountIsWeight {
-					pInvYeast.Inventory.Dry.Mass = "Kg"
-					pInvYeast.Inventory.Dry.Amount += yeast.Amount
-				} else {
-					pInvYeast.Inventory.Liquid.Volume = "l"
-					pInvYeast.Inventory.Liquid.Amount += yeast.Amount
-				}
-			} else {
+			if pInvYeast == nil {
 
 				pInvYeast = new(Yeast)
 
@@ -872,6 +874,14 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 				}
 
 				beer2.Cultures = append(beer2.Cultures, *pInvYeast)
+			}
+
+			if yeast.AmountIsWeight {
+				pInvYeast.Inventory.Dry.Mass = "Kg"
+				pInvYeast.Inventory.Dry.Amount += yeast.Amount
+			} else {
+				pInvYeast.Inventory.Liquid.Volume = "l"
+				pInvYeast.Inventory.Liquid.Amount += yeast.Amount
 			}
 		}
 
