@@ -172,7 +172,7 @@ type Style struct {
 	ColorMin        float32  `xml:"COLOR_MIN"`
 	ColorMax        float32  `xml:"COLOR_MAX"`
 	CarbMin         float32  `xml:"CARB_MIN"`
-	CarbMax         string   `xml:"CARB_MAX"` // Testfile from beerxml contains 2.1>
+	CarbMax         float32  `xml:"CARB_MAX"`
 	AbvMax          float32  `xml:"ABV_MAX"`
 	AbvMin          float32  `xml:"ABV_MIN"`
 	Notes           string   `xml:"NOTES"`

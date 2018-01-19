@@ -17,9 +17,9 @@ import (
 )
 
 type Color struct {
-	XMLName xml.Name `xml:"color"`
-	Scale   string   `xml:"scale,attr"`
-	Color   float32  `xml:",chardata"`
+	//XMLName xml.Name `xml:"color"`
+	Scale string  `xml:"scale,attr"`
+	Color float32 `xml:",chardata"`
 }
 
 type ColorScale struct {
@@ -883,6 +883,57 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 				pInvYeast.Inventory.Liquid.Volume = "l"
 				pInvYeast.Inventory.Liquid.Amount += yeast.Amount
 			}
+		}
+
+		recStyle := StyleAddition{}
+
+		recStyle.Name = recipe.Style.Name
+		recStyle.Category = recipe.Style.Category
+		recStyle.CategoryNumber = recipe.Style.CategoryNumber
+		recStyle.StyleLetter = recipe.Style.StyleLetter
+		recStyle.StyleGuide = recipe.Style.StyleGuide
+		recStyle.Type = recipe.Style.Type
+
+		rec.Style = recStyle
+
+		var pInvStyle *Style = nil
+		pInvStyle = getInventoryStyle(beer2.Styles, recipe.Style.Name)
+
+		if pInvStyle == nil {
+			pInvStyle = new(Style)
+			pInvStyle.Name = recipe.Style.Name
+			pInvStyle.Category = recipe.Style.Category
+			pInvStyle.CategoryNumber = recipe.Style.CategoryNumber
+			pInvStyle.StyleLetter = recipe.Style.StyleLetter
+			pInvStyle.StyleGuide = recipe.Style.StyleGuide
+			pInvStyle.Type = recipe.Style.Type
+
+			pInvStyle.Og.Minimum.Density = "sg"
+			pInvStyle.Og.Minimum.Minimum = recipe.Style.OgMin
+			pInvStyle.Og.Maximum.Density = "sg"
+			pInvStyle.Og.Maximum.Maximum = recipe.Style.OgMax
+			pInvStyle.Fg.Minimum.Density = "sg"
+			pInvStyle.Fg.Minimum.Minimum = recipe.Style.FgMin
+			pInvStyle.Fg.Maximum.Density = "sg"
+			pInvStyle.Fg.Maximum.Maximum = recipe.Style.FgMax
+
+			pInvStyle.IBU.Minimum = recipe.Style.IbuMin
+			pInvStyle.IBU.Maximum = recipe.Style.IbuMax
+			pInvStyle.Color.Minimum.Scale = "SRM"
+			pInvStyle.Color.Maximum.Scale = "SRM"
+			pInvStyle.Color.Minimum.Color = recipe.Style.ColorMin
+			pInvStyle.Color.Maximum.Color = recipe.Style.ColorMax
+			pInvStyle.Carbonation.Minimum = recipe.Style.CarbMin
+			pInvStyle.Carbonation.Maximum = recipe.Style.CarbMax
+			pInvStyle.ABV.Minimum = recipe.Style.AbvMin
+			pInvStyle.ABV.Maximum = recipe.Style.AbvMax
+
+			pInvStyle.Notes = recipe.Style.Notes
+			pInvStyle.Profile = recipe.Style.Profile
+			pInvStyle.Ingredients = recipe.Style.Ingredients
+			pInvStyle.Examples = recipe.Style.Examples
+
+			beer2.Styles = append(beer2.Styles, *pInvStyle)
 		}
 
 		rec.Ingredients = recIng
