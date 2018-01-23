@@ -18,7 +18,7 @@ import (
 
 type Color struct {
 	//XMLName xml.Name `xml:"color"`
-	Scale string  `xml:"scale,attr"`
+	Units string  `xml:"units,attr"`
 	Color float32 `xml:",chardata"`
 }
 
@@ -29,25 +29,25 @@ type ColorScale struct {
 
 type VolAmount struct {
 	XMLName xml.Name `xml:"amount"`
-	Volume  string   `xml:"volume,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
 type WeightAmount struct {
 	XMLName xml.Name `xml:"amount_as_weight"`
-	Mass    string   `xml:"mass,attr"`
+	Units   string   `xml:"units,attr"`
 	Weight  float32  `xml:",chardata"`
 }
 
 type OriginalGravity struct {
 	XMLName xml.Name `xml:"original_gravity"`
-	Density string   `xml:"density,attr"`
+	Units   string   `xml:"units,attr"`
 	Og      float32  `xml:",chardata"`
 }
 
 type FinalGravity struct {
 	XMLName xml.Name `xml:"final_gravity"`
-	Density string   `xml:"density,attr"`
+	Units   string   `xml:"units,attr"`
 	Fg      float32  `xml:",chardata"`
 }
 
@@ -95,19 +95,19 @@ type Recipe struct {
 
 type InvLeaf struct {
 	XMLName xml.Name `xml:"leaf"`
-	Mass    string   `xml:"mass,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
 type InvPellet struct {
 	XMLName xml.Name `xml:"pellet"`
-	Mass    string   `xml:"mass,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
 type InvPlug struct {
 	XMLName xml.Name `xml:"plug"`
-	Mass    string   `xml:"mass,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
@@ -136,20 +136,20 @@ type Hop struct {
 
 type MassAmount struct {
 	XMLName xml.Name `xml:"amount"`
-	Mass    string   `xml:"mass,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
 type InventoryAmount struct {
 	XMLName xml.Name `xml:"inventory"`
-	Mass    string   `xml:"mass,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
 type UseTime struct {
-	XMLName  xml.Name `xml:"time"`
-	Duration string   `xml:"duration,attr"`
-	Time     float32  `xml:",chardata"`
+	XMLName xml.Name `xml:"time"`
+	Units   string   `xml:"units,attr"`
+	Time    float32  `xml:",chardata"`
 }
 
 type HopAddition struct {
@@ -206,25 +206,25 @@ type AlcTolerence struct {
 
 type LiquidAmount struct {
 	XMLName xml.Name `xml:"liquid"`
-	Volume  string   `xml:"volume,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
 type DryAmount struct {
 	XMLName xml.Name `xml:"dry"`
-	Mass    string   `xml:"mass,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
 type SlantAmount struct {
 	XMLName xml.Name `xml:"slant"`
-	Volume  string   `xml:"volume,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
 type CultureAmount struct {
 	XMLName xml.Name `xml:"culture"`
-	Volume  string   `xml:"volume,attr"`
+	Units   string   `xml:"units,attr"`
 	Date    string   `xml:"date,attr"`
 	Amount  float32  `xml:",chardata"`
 }
@@ -285,13 +285,13 @@ type YeastAdditions struct {
 
 type MinDensity struct {
 	XMLName xml.Name `xml:"minimum"`
-	Density string   `xml:"density,attr"`
+	Units   string   `xml:"units,attr"`
 	Minimum float32  `xml:",chardata"`
 }
 
 type MaxDensity struct {
 	XMLName xml.Name `xml:"maximum"`
-	Density string   `xml:"density,attr"`
+	Units   string   `xml:"units,attr"`
 	Maximum float32  `xml:",chardata"`
 }
 
@@ -375,43 +375,43 @@ type EquipmentUsed struct {
 
 type InfuseVol struct {
 	XMLName xml.Name `xml:"infuse_amount"`
-	Volume  string   `xml:"volume,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
 type DecVol struct {
 	XMLName xml.Name `xml:"decoction_volume"`
-	Volume  string   `xml:"volume,attr"`
+	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
 type StepDur struct {
-	XMLName  xml.Name `xml:"step_time"`
-	Duration string   `xml:"duration,attr"`
-	Time     float32  `xml:",chardata"`
+	XMLName xml.Name `xml:"step_time"`
+	Units   string   `xml:"units,attr"`
+	Time    float32  `xml:",chardata"`
 }
 
 type RampDur struct {
-	XMLName  xml.Name `xml:"step_time"`
-	Duration string   `xml:"duration,attr"`
-	Time     float32  `xml:",chardata"`
+	XMLName xml.Name `xml:"step_time"`
+	Units   string   `xml:"units,attr"`
+	Time    float32  `xml:",chardata"`
 }
 
 type StepDeg struct {
 	XMLName xml.Name `xml:"step_temperature"`
-	Degrees string   `xml:"degrees,attr"`
+	Units   string   `xml:"degrees,attr"`
 	Time    float32  `xml:",chardata"`
 }
 
 type EndDeg struct {
 	XMLName xml.Name `xml:"end_temperature"`
-	Degrees string   `xml:"degrees,attr"`
+	Units   string   `xml:"degrees,attr"`
 	Time    float32  `xml:",chardata"`
 }
 
 type InfuseDeg struct {
 	XMLName xml.Name `xml:"infuse_temperature"`
-	Degrees string   `xml:"degrees,attr"`
+	Units   string   `xml:"units,attr"`
 	Time    float32  `xml:",chardata"`
 }
 
@@ -432,13 +432,13 @@ type MashStep struct {
 
 type GrainDeg struct {
 	XMLName xml.Name `xml:"grain_temperature"`
-	Degrees string   `xml:"degrees,attr"`
+	Units   string   `xml:"unnits,attr"`
 	Time    float32  `xml:",chardata"`
 }
 
 type SpargeDeg struct {
 	XMLName xml.Name `xml:"sparge_temperature"`
-	Degrees string   `xml:"degrees,attr"`
+	Units   string   `xml:"units,attr"`
 	Time    float32  `xml:",chardata"`
 }
 
@@ -563,13 +563,13 @@ func getInventoryStyle(invStyle []Style, styleName string) *Style {
 func (inv *InventoryHop) AddHopAmount(amount float32, mass string, form string) {
 
 	if form == "Pellet" {
-		inv.Pellet.Mass = mass
+		inv.Pellet.Units = mass
 		inv.Pellet.Amount += amount
 	} else if form == "Leaf" {
-		inv.Leaf.Mass = mass
+		inv.Leaf.Units = mass
 		inv.Leaf.Amount += amount
 	} else if form == "Plug" {
-		inv.Plug.Mass = mass
+		inv.Plug.Units = mass
 		inv.Plug.Amount += amount
 	} else {
 		fmt.Println("cant find form ", form)
@@ -582,12 +582,12 @@ func (inv *InventoryAmount) AddFermentationAmount(amount float32, mass string) {
 }
 
 func (inv *InventoryMisc) AddMiscVolAmount(amount float32, volume string) {
-	inv.Amount.Volume = volume
+	inv.Amount.Units = volume
 	inv.Amount.Amount += amount
 }
 
 func (inv *InventoryMisc) AddMiscMassAmount(amount float32, mass string) {
-	inv.AmountAsWeight.Mass = mass
+	inv.AmountAsWeight.Units = mass
 	inv.AmountAsWeight.Weight += amount
 }
 
@@ -625,12 +625,12 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 		rec.Notes = recipe.Notes
 
 		recOg := OriginalGravity{}
-		recOg.Density = "sg"
+		recOg.Units = "sg"
 		recOg.Og = recipe.Og
 		rec.Og = recOg
 
 		recFg := FinalGravity{}
-		recFg.Density = "sg"
+		recFg.Units = "sg"
 		recFg.Fg = recipe.Fg
 		rec.Fg = recFg
 
@@ -645,7 +645,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recHop.Form = hop.Form
 
 			hopTime := UseTime{}
-			hopTime.Duration = "min"
+			hopTime.Units = "min"
 			fTime, err := strconv.ParseFloat(hop.Time, 32)
 			if err != nil {
 				fmt.Println(err)
@@ -654,7 +654,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recHop.Time = hopTime
 
 			recMass := MassAmount{}
-			recMass.Mass = "Kg"
+			recMass.Units = "Kg"
 			recMass.Amount = hop.Amount
 			recHop.Amount = recMass
 
@@ -699,13 +699,13 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recFerm.AddAfterBoil = ferm.AddAfterBoil
 
 			if ferm.Type == "Extract" {
-				recFerm.Color.Scale = "SRM"
+				recFerm.Color.Units = "SRM"
 			} else {
-				recFerm.Color.Scale = "L"
+				recFerm.Color.Units = "L"
 			}
 			recFerm.Color.Color = ferm.Color
 
-			recFerm.Amount.Mass = "Kg"
+			recFerm.Amount.Units = "Kg"
 			recFerm.Amount.Amount = ferm.Amount
 
 			recIng.Fermentables = append(recIng.Fermentables, recFerm)
@@ -722,7 +722,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 				pInvFerm.Supplier = ferm.Supplier
 				pInvFerm.Notes = ferm.Notes
 
-				pInvFerm.Color.Scale = recFerm.Color.Scale
+				pInvFerm.Color.Units = recFerm.Color.Units
 				pInvFerm.Color.Color = ferm.Color
 
 				pInvFerm.YieldDryBasis.FineGrind = ferm.Yield
@@ -751,14 +751,14 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recMisc.Use = misc.Use
 
 			if misc.AmountIsWeight {
-				recMisc.Amount.Volume = "Kg"
+				recMisc.Amount.Units = "Kg"
 				recMisc.Amount.Amount = misc.Amount
 			} else {
-				recMisc.AmountAsWeight.Mass = "l"
+				recMisc.AmountAsWeight.Units = "l"
 				recMisc.AmountAsWeight.Weight = misc.Amount
 			}
 
-			recMisc.Time.Duration = "min"
+			recMisc.Time.Units = "min"
 			recMisc.Time.Time = misc.Time
 
 			recIng.Miscs = append(recIng.Miscs, recMisc)
@@ -797,7 +797,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recWater.Chloride = water.Chloride
 			recWater.Sodium = water.Sodium
 			recWater.Magnesium = water.Magnesium
-			recWater.Amount.Volume = "l"
+			recWater.Amount.Units = "l"
 			recWater.Amount.Amount = water.Amount
 
 			recIng.Waters = append(recIng.Waters, recWater)
@@ -833,10 +833,10 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recYeast.AddToSecondary = yeast.AddToSecondary
 
 			if yeast.AmountIsWeight {
-				recYeast.AmountAsWeight.Mass = "Kg"
+				recYeast.AmountAsWeight.Units = "Kg"
 				recYeast.AmountAsWeight.Weight = yeast.Amount
 			} else {
-				recYeast.Amount.Volume = "l"
+				recYeast.Amount.Units = "l"
 				recYeast.Amount.Amount = yeast.Amount
 			}
 
@@ -877,10 +877,10 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			}
 
 			if yeast.AmountIsWeight {
-				pInvYeast.Inventory.Dry.Mass = "Kg"
+				pInvYeast.Inventory.Dry.Units = "Kg"
 				pInvYeast.Inventory.Dry.Amount += yeast.Amount
 			} else {
-				pInvYeast.Inventory.Liquid.Volume = "l"
+				pInvYeast.Inventory.Liquid.Units = "l"
 				pInvYeast.Inventory.Liquid.Amount += yeast.Amount
 			}
 		}
@@ -908,19 +908,19 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			pInvStyle.StyleGuide = recipe.Style.StyleGuide
 			pInvStyle.Type = recipe.Style.Type
 
-			pInvStyle.Og.Minimum.Density = "sg"
+			pInvStyle.Og.Minimum.Units = "sg"
 			pInvStyle.Og.Minimum.Minimum = recipe.Style.OgMin
-			pInvStyle.Og.Maximum.Density = "sg"
+			pInvStyle.Og.Maximum.Units = "sg"
 			pInvStyle.Og.Maximum.Maximum = recipe.Style.OgMax
-			pInvStyle.Fg.Minimum.Density = "sg"
+			pInvStyle.Fg.Minimum.Units = "sg"
 			pInvStyle.Fg.Minimum.Minimum = recipe.Style.FgMin
-			pInvStyle.Fg.Maximum.Density = "sg"
+			pInvStyle.Fg.Maximum.Units = "sg"
 			pInvStyle.Fg.Maximum.Maximum = recipe.Style.FgMax
 
 			pInvStyle.IBU.Minimum = recipe.Style.IbuMin
 			pInvStyle.IBU.Maximum = recipe.Style.IbuMax
-			pInvStyle.Color.Minimum.Scale = "SRM"
-			pInvStyle.Color.Maximum.Scale = "SRM"
+			pInvStyle.Color.Minimum.Units = "SRM"
+			pInvStyle.Color.Maximum.Units = "SRM"
 			pInvStyle.Color.Minimum.Color = recipe.Style.ColorMin
 			pInvStyle.Color.Maximum.Color = recipe.Style.ColorMax
 			pInvStyle.Carbonation.Minimum = recipe.Style.CarbMin
