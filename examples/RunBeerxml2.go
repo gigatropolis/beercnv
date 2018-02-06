@@ -26,7 +26,8 @@ func main() {
 		}
 	*/
 	beer2 := beerxml2.BeerXml2{}
-	filename := "..\\Recipies\\xml\\include-hops.xml"
+	filename := "Recipies\\xml\\include-hops.xml"
+	//filename := "..\\Recipies\\xml\\include-hops.xml"
 	//filename := "Recipies\\xml\\nhc_2015.xml"
 
 	err := beerxml2.AddFromBeerXMLFile(&beer2, filename)

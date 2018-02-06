@@ -941,8 +941,8 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 		rec.Mash.Name = mash.Name
 		rec.Mash.GrainTemp.Units = "C"
 		rec.Mash.GrainTemp.Degrees = mash.GrainTemp
-		rec.Mash.SpargeDeg.Units = "C"
-		rec.Mash.SpargeDeg.Degrees = mash.SpargeTemp
+		rec.Mash.SpargeTemp.Units = "C"
+		rec.Mash.SpargeTemp.Degrees = mash.SpargeTemp
 		rec.Mash.Ph = mash.Ph
 		rec.Mash.Notes = mash.Notes
 

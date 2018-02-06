@@ -253,8 +253,8 @@ type MashStep struct {
 	EndTemp          float32  `xml:"END_TEMP"`
 	Description      string   `xml:"DESCRIPTION"`
 	WaterGrainRatio  string   `xml:"WATER_GRAIN_RATIO"`
-	DecotionAmt      string   `xml:"DECOTION_AMT"`
-	InfuseTemp       string   `xml:"INFUSE_TEMP"`
+	DecotionAmt      float32  `xml:"DECOTION_AMT"`
+	InfuseTemp       float32  `xml:"INFUSE_TEMP"`
 	DisplayStepTemp  string   `xml:"DISPLAY_STEP_TEMP"`
 	DisplayInfuseAmt string   `xml:"DISPLAY_INFUSE_AMT"`
 }
