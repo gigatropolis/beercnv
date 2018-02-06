@@ -400,23 +400,23 @@ type RampDur struct {
 type StepDeg struct {
 	XMLName xml.Name `xml:"step_temperature"`
 	Units   string   `xml:"degrees,attr"`
-	Time    float32  `xml:",chardata"`
+	Degrees float32  `xml:",chardata"`
 }
 
 type EndDeg struct {
 	XMLName xml.Name `xml:"end_temperature"`
 	Units   string   `xml:"degrees,attr"`
-	Time    float32  `xml:",chardata"`
+	Degrees float32  `xml:",chardata"`
 }
 
 type InfuseDeg struct {
 	XMLName xml.Name `xml:"infuse_temperature"`
 	Units   string   `xml:"units,attr"`
-	Time    float32  `xml:",chardata"`
+	Degrees float32  `xml:",chardata"`
 }
 
 type MashStep struct {
-	XMLName         xml.Name  `xml:"mash_step"`
+	XMLName         xml.Name  `xml:"step"`
 	Name            string    `xml:"name"`
 	Type            string    `xml:"type"`
 	InfuseAmount    InfuseVol `xml:"infuse_amount"`
@@ -432,14 +432,14 @@ type MashStep struct {
 
 type GrainDeg struct {
 	XMLName xml.Name `xml:"grain_temperature"`
-	Units   string   `xml:"unnits,attr"`
-	Time    float32  `xml:",chardata"`
+	Units   string   `xml:"units,attr"`
+	Degrees float32  `xml:",chardata"`
 }
 
 type SpargeDeg struct {
 	XMLName xml.Name `xml:"sparge_temperature"`
 	Units   string   `xml:"units,attr"`
-	Time    float32  `xml:",chardata"`
+	Degrees float32  `xml:",chardata"`
 }
 
 type Mash struct {
@@ -449,7 +449,7 @@ type Mash struct {
 	SpargeTemp SpargeDeg  `xml:"sparge_temperature"`
 	Ph         float32    `xml:"pH"`
 	Notes      string     `xml:"notes"`
-	MashSteps  []MashStep `xml:"mash_steps>mash_step"`
+	MashSteps  []MashStep `xml:"mash_steps"`
 }
 
 type Water struct {
@@ -660,7 +660,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recIng.Hops = append(recIng.Hops, recHop)
 
-			var pInvHop *Hop = nil
+			var pInvHop *Hop
 			pInvHop = getInventoryHop(beer2.HopVarieties, hop.Name)
 
 			if pInvHop == nil {
@@ -710,7 +710,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recIng.Fermentables = append(recIng.Fermentables, recFerm)
 
-			var pInvFerm *Fermentable = nil
+			var pInvFerm *Fermentable
 			pInvFerm = getInventoryFermentable(beer2.Fermentables, ferm.Name)
 
 			if pInvFerm == nil {
@@ -763,7 +763,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recIng.Miscs = append(recIng.Miscs, recMisc)
 
-			var pInvMisc *Misc = nil
+			var pInvMisc *Misc
 			pInvMisc = getInventoryMisc(beer2.Miscs, misc.Name)
 
 			if pInvMisc == nil {
@@ -802,7 +802,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recIng.Waters = append(recIng.Waters, recWater)
 
-			var pInvWater *Water = nil
+			var pInvWater *Water
 			pInvWater = getInventoryWater(beer2.Profiles, water.Name)
 
 			if pInvWater == nil {
@@ -844,7 +844,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recIng.Yeasts = append(recIng.Yeasts, recYeast)
 
-			var pInvYeast *Yeast = nil
+			var pInvYeast *Yeast
 			pInvYeast = getInventoryYeast(beer2.Cultures, yeast.Name)
 
 			if pInvYeast == nil {
@@ -896,7 +896,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 		rec.Style = recStyle
 
-		var pInvStyle *Style = nil
+		var pInvStyle *Style
 		pInvStyle = getInventoryStyle(beer2.Styles, recipe.Style.Name)
 
 		if pInvStyle == nil {
@@ -934,6 +934,42 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			pInvStyle.Examples = recipe.Style.Examples
 
 			beer2.Styles = append(beer2.Styles, *pInvStyle)
+		}
+
+		mash := recipe.Mash
+
+		rec.Mash.Name = mash.Name
+		rec.Mash.GrainTemp.Units = "C"
+		rec.Mash.GrainTemp.Degrees = mash.GrainTemp
+		rec.Mash.SpargeDeg.Units = "C"
+		rec.Mash.SpargeDeg.Degrees = mash.SpargeTemp
+		rec.Mash.Ph = mash.Ph
+		rec.Mash.Notes = mash.Notes
+
+		for _, mashStep := range recipe.Mash.MashSteps {
+
+			recMashStep := MashStep{}
+
+			recMashStep.Name = mashStep.Name
+			recMashStep.Type = mashStep.Type
+			recMashStep.InfuseAmount.Units = "L"
+			recMashStep.InfuseAmount.Amount = mashStep.InfuseAmount
+			recMashStep.StepTemp.Units = "C"
+			recMashStep.StepTemp.Degrees = mashStep.StepTemp
+			recMashStep.StepTime.Units = "min"
+			recMashStep.StepTime.Time = mashStep.StepTime
+			recMashStep.RampTime.Units = "min"
+			recMashStep.RampTime.Time = mashStep.RampTime
+			recMashStep.EndTemp.Units = "C"
+			recMashStep.EndTemp.Degrees = mashStep.EndTemp
+			recMashStep.Description = mashStep.Description
+			recMashStep.WaterGrainRatio = mashStep.WaterGrainRatio
+			recMashStep.InfuseTemp.Units = "C"
+			recMashStep.InfuseTemp.Degrees = mashStep.InfuseTemp
+			recMashStep.DecotionAmt.Units = "L"
+			recMashStep.DecotionAmt.Amount = mashStep.DecotionAmt
+
+			rec.Mash.MashSteps = append(rec.Mash.MashSteps, recMashStep)
 		}
 
 		rec.Ingredients = recIng
