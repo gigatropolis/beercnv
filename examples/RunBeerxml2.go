@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+
 	"fmt"
 	//"io/ioutil"
 	"os"

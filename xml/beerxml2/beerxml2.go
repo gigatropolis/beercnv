@@ -8,10 +8,14 @@ package beerxml2
 
 import (
 	"../../xml/beerxml"
+	//"code.google.com/p/go-charset/charset"
+	//_ "code.google.com/p/go-charset/data"
 	"encoding/xml"
 	"fmt"
+	"golang.org/x/net/html/charset"
+	//"golang.org/x/net/html/charset"
 	"io"
-	"io/ioutil"
+	//"io/ioutil"
 	"os"
 	"strconv"
 )
@@ -380,7 +384,7 @@ type InfuseVol struct {
 }
 
 type DecVol struct {
-	XMLName xml.Name `xml:"decoction_volume"`
+	XMLName xml.Name `xml:"decoction_amount"`
 	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
@@ -392,7 +396,7 @@ type StepDur struct {
 }
 
 type RampDur struct {
-	XMLName xml.Name `xml:"step_time"`
+	XMLName xml.Name `xml:"ramp_time"`
 	Units   string   `xml:"units,attr"`
 	Time    float32  `xml:",chardata"`
 }
@@ -597,13 +601,23 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 	beer := beerxml.BeerXml{}
 
 	//filename := "Recipies\\xml\\nhc_2015.xml"
-	buf, err := ioutil.ReadFile(filename)
+	//buf, err := ioutil.ReadFile(filename)
+
+	xmlFile, err := os.Open(filename)
 
 	if err != nil {
 		panic(err)
 	}
 
-	err = xml.Unmarshal(buf, &beer)
+	//decoder := xml.NewDecoder(reader)
+	//decoder.CharsetReader = charset.NewReaderLabel
+	//err = decoder.Decode(&parsed)
+
+	p := xml.NewDecoder(xmlFile)
+	p.CharsetReader = charset.NewReaderLabel
+	err = p.Decode(&beer)
+
+	//err = xml.Unmarshal(buf, &beer)
 
 	if err != nil {
 		panic(err)
@@ -964,10 +978,10 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recMashStep.EndTemp.Degrees = mashStep.EndTemp
 			recMashStep.Description = mashStep.Description
 			recMashStep.WaterGrainRatio = mashStep.WaterGrainRatio
-			recMashStep.InfuseTemp.Units = "C"
-			recMashStep.InfuseTemp.Degrees = mashStep.InfuseTemp
-			recMashStep.DecotionAmt.Units = "L"
-			recMashStep.DecotionAmt.Amount = mashStep.DecotionAmt
+			//recMashStep.InfuseTemp.Units = "C"
+			//recMashStep.InfuseTemp.Degrees = mashStep.InfuseTemp
+			//recMashStep.DecotionAmt.Units = "L"
+			//recMashStep.DecotionAmt.Amount = mashStep.DecotionAmt
 
 			rec.Mash.MashSteps = append(rec.Mash.MashSteps, recMashStep)
 		}
