@@ -4,7 +4,7 @@
 // References:
 // http://www.beerxml.com/
 
-package beerxml
+package beercnv
 
 import (
 	"encoding/xml"
