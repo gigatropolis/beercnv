@@ -9,11 +9,10 @@ package beercnv
 import (
 	"encoding/xml"
 	"fmt"
-	"golang.org/x/net/html/charset"
 	"io"
 	//"io/ioutil"
 	"os"
-	"strconv"
+	//"strconv"
 )
 
 type Color struct {
@@ -53,16 +52,16 @@ type FinalGravity struct {
 
 // Recipes holds a slice of Rrecipes
 type BeerXml2 struct {
-	XMLName      xml.Name      `xml:"beer_xml"`
-	Version      string        `xml:"version"`
-	HopVarieties []Hop         `xml:"hop_varieties>hop"`
-	Fermentables []Fermentable `xml:"fermentables>fermentable"`
-	Miscs        []Misc        `xml:"miscellaneous_ingredients>miscellaneous"`
-	Cultures     []Yeast       `xml:"cultures>yeast"`
-	Styles       []Style       `xml:"styles>style"`
-	Profiles     []Water       `xml:"profiles>water"`
-	Procedures   []Mash        `xml:"procedure>mash"`
-	Recipes      []Recipe      `xml:"recipes>recipe"`
+	XMLName      xml.Name         `xml:"beer_xml"`
+	Version      string           `xml:"version"`
+	HopVarieties []InvHop         `xml:"hop_varieties>hop"`
+	Fermentables []InvFermentable `xml:"fermentables>fermentable"`
+	Miscs        []InvMisc        `xml:"miscellaneous_ingredients>miscellaneous"`
+	Cultures     []InvYeast       `xml:"cultures>yeast"`
+	Styles       []StyleProfile   `xml:"styles>style"`
+	Profiles     []WaterProfile   `xml:"profiles>water"`
+	Procedures   []MashProfile    `xml:"procedure>mash"`
+	Recipes      []BeerRecipe     `xml:"recipes>recipe"`
 }
 
 type RecIngredients struct {
@@ -74,8 +73,8 @@ type RecIngredients struct {
 	Equipment    []EquipmentUsed  `xml:"Equipment,omitempty"`
 }
 
-// Recipe implements a BeerXML recipe including the different childs.
-type Recipe struct {
+// Recipe implements a BeerXML2 recipe including the different childs.
+type BeerRecipe struct {
 	XMLName         xml.Name        `xml:"recipe"`
 	Name            string          `xml:"name"`
 	Type            string          `xml:"type"`
@@ -87,51 +86,51 @@ type Recipe struct {
 	Efficiency      float32         `xml:"efficiency"`
 	Style           StyleAddition   `xml:"style"`
 	Ingredients     RecIngredients  `xml:"ingredients"`
-	Mash            Mash            `xml:"mash"`
+	Mash            MashProfile     `xml:"mash"`
 	Notes           string          `xml:"notes"`
 	Og              OriginalGravity `xml:"original_gravity"`
 	Fg              FinalGravity    `xml:"final_gravity"`
 }
 
-type InvLeaf struct {
+type Leaf struct {
 	XMLName xml.Name `xml:"leaf"`
 	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
-type InvPellet struct {
+type Pellet struct {
 	XMLName xml.Name `xml:"pellet"`
 	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
-type InvPlug struct {
+type Plug struct {
 	XMLName xml.Name `xml:"plug"`
 	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
-type InventoryHop struct {
-	Leaf   InvLeaf   `xml:"leaf"`
-	Pellet InvPellet `xml:"pellet"`
-	Plug   InvPlug   `xml:"plug"`
+type HopInv struct {
+	Leaf   Leaf   `xml:"leaf"`
+	Pellet Pellet `xml:"pellet"`
+	Plug   Plug   `xml:"plug"`
 }
 
-type Hop struct {
-	XMLName        xml.Name     `xml:"hop"`
-	Name           string       `xml:"name"`
-	Origin         string       `xml:"origin"`
-	AlphaAcidUnits float32      `xml:"alpha_acid_units"`
-	BetaAcidUnits  float32      `xml:"beta_acid_units"`
-	Type           string       `xml:"type"`
-	Notes          string       `xml:"notes"`
-	PercentLost    float32      `xml:"percent_lost"`
-	Substitutes    string       `xml:"substitutes"`
-	Humulene       float32      `xml:"humulene"`
-	Caryophyllene  float32      `xml:"caryophyllene"`
-	Cohumulone     float32      `xml:"cohumulone"`
-	Myrcene        float32      `xml:"myrcene"`
-	Inventory      InventoryHop `xml:"inventory"`
+type InvHop struct {
+	XMLName        xml.Name `xml:"hop"`
+	Name           string   `xml:"name"`
+	Origin         string   `xml:"origin"`
+	AlphaAcidUnits float32  `xml:"alpha_acid_units"`
+	BetaAcidUnits  float32  `xml:"beta_acid_units"`
+	Type           string   `xml:"type"`
+	Notes          string   `xml:"notes"`
+	PercentLost    float32  `xml:"percent_lost"`
+	Substitutes    string   `xml:"substitutes"`
+	Humulene       float32  `xml:"humulene"`
+	Caryophyllene  float32  `xml:"caryophyllene"`
+	Cohumulone     float32  `xml:"cohumulone"`
+	Myrcene        float32  `xml:"myrcene"`
+	Inventory      HopInv   `xml:"inventory"`
 }
 
 type MassAmount struct {
@@ -169,7 +168,7 @@ type Yield struct {
 	CoarseFineDiff float32 `xml:"fine_coarse_difference"`
 }
 
-type Fermentable struct {
+type InvFermentable struct {
 	XMLName        xml.Name        `xml:"fermentable"`
 	Name           string          `xml:"name"`
 	Type           string          `xml:"type"`
@@ -253,7 +252,7 @@ type TempRange struct {
 	Maximum MaxTemp `xml:"maximum"`
 }
 
-type Yeast struct {
+type InvYeast struct {
 	XMLName          xml.Name       `xml:"yeast"`
 	Name             string         `xml:"name"`
 	Type             string         `xml:"type"`
@@ -315,7 +314,7 @@ type StyleABV struct {
 	Maximum float32 `xml:"maximum"`
 }
 
-type Style struct {
+type StyleProfile struct {
 	XMLName        xml.Name   `xml:"style"`
 	Name           string     `xml:"name"`
 	Category       string     `xml:"category"`
@@ -415,7 +414,7 @@ type InfuseDeg struct {
 	Degrees float32  `xml:",chardata"`
 }
 
-type MashStep struct {
+type RecMashStep struct {
 	XMLName         xml.Name  `xml:"step"`
 	Name            string    `xml:"name"`
 	Type            string    `xml:"type"`
@@ -442,17 +441,17 @@ type SpargeDeg struct {
 	Degrees float32  `xml:",chardata"`
 }
 
-type Mash struct {
-	XMLName    xml.Name   `xml:"mash"`
-	Name       string     `xml:"name"`
-	GrainTemp  GrainDeg   `xml:"grain_temperature"`
-	SpargeTemp SpargeDeg  `xml:"sparge_temperature"`
-	Ph         float32    `xml:"pH"`
-	Notes      string     `xml:"notes"`
-	MashSteps  []MashStep `xml:"mash_steps"`
+type MashProfile struct {
+	XMLName    xml.Name      `xml:"mash"`
+	Name       string        `xml:"name"`
+	GrainTemp  GrainDeg      `xml:"grain_temperature"`
+	SpargeTemp SpargeDeg     `xml:"sparge_temperature"`
+	Ph         float32       `xml:"pH"`
+	Notes      string        `xml:"notes"`
+	MashSteps  []RecMashStep `xml:"mash_steps"`
 }
 
-type Water struct {
+type WaterProfile struct {
 	XMLName     xml.Name `xml:"water"`
 	Name        string   `xml:"name"`
 	Calcium     float32  `xml:"calcium"`
@@ -482,7 +481,7 @@ type InventoryMisc struct {
 	AmountAsWeight WeightAmount `xml:"amount_as_weight"`
 }
 
-type Misc struct {
+type InvMisc struct {
 	XMLName   xml.Name      `xml:"miscellaneous"`
 	Name      string        `xml:"name"`
 	Type      string        `xml:"type"`
@@ -506,7 +505,7 @@ func (xml *BeerXml2) Init() {
 	xml.Version = "2.0"
 }
 
-func getInventoryHop(invHops []Hop, hopName string) *Hop {
+func getInventoryHop(invHops []InvHop, hopName string) *InvHop {
 	for index := range invHops {
 		if invHops[index].Name == hopName {
 			return &(invHops[index])
@@ -515,7 +514,7 @@ func getInventoryHop(invHops []Hop, hopName string) *Hop {
 	return nil
 }
 
-func getInventoryMisc(invMisc []Misc, miscName string) *Misc {
+func getInventoryMisc(invMisc []InvMisc, miscName string) *InvMisc {
 	for index := range invMisc {
 		if invMisc[index].Name == miscName {
 			return &(invMisc[index])
@@ -524,7 +523,7 @@ func getInventoryMisc(invMisc []Misc, miscName string) *Misc {
 	return nil
 }
 
-func getInventoryFermentable(invFerms []Fermentable, fermName string) *Fermentable {
+func getInventoryFermentable(invFerms []InvFermentable, fermName string) *InvFermentable {
 	for index := range invFerms {
 		if invFerms[index].Name == fermName {
 			return &(invFerms[index])
@@ -533,7 +532,7 @@ func getInventoryFermentable(invFerms []Fermentable, fermName string) *Fermentab
 	return nil
 }
 
-func getInventoryWater(invWater []Water, waterName string) *Water {
+func getInventoryWater(invWater []WaterProfile, waterName string) *WaterProfile {
 	for index := range invWater {
 		if invWater[index].Name == waterName {
 			return &(invWater[index])
@@ -542,7 +541,7 @@ func getInventoryWater(invWater []Water, waterName string) *Water {
 	return nil
 }
 
-func getInventoryYeast(invYeast []Yeast, yeastName string) *Yeast {
+func getInventoryYeast(invYeast []InvYeast, yeastName string) *InvYeast {
 	for index := range invYeast {
 		if invYeast[index].Name == yeastName {
 			return &(invYeast[index])
@@ -551,7 +550,7 @@ func getInventoryYeast(invYeast []Yeast, yeastName string) *Yeast {
 	return nil
 }
 
-func getInventoryStyle(invStyle []Style, styleName string) *Style {
+func getInventoryStyle(invStyle []StyleProfile, styleName string) *StyleProfile {
 	for index := range invStyle {
 		if invStyle[index].Name == styleName {
 			return &(invStyle[index])
@@ -560,7 +559,7 @@ func getInventoryStyle(invStyle []Style, styleName string) *Style {
 	return nil
 }
 
-func (inv *InventoryHop) AddHopAmount(amount float32, mass string, form string) {
+func (inv *HopInv) AddHopAmount(amount float32, mass string, form string) {
 
 	if form == "Pellet" {
 		inv.Pellet.Units = mass
@@ -592,7 +591,7 @@ func (inv *InventoryMisc) AddMiscMassAmount(amount float32, mass string) {
 }
 
 // NewBeerXml takes a io.Reader and returns Recipes
-func NewBeerXml(r io.Reader) (bxml *BeerXml2, err error) {
+func NewBeerXml2(r io.Reader) (bxml *BeerXml2, err error) {
 	dec := xml.NewDecoder(r)
 	//dec.CharsetReader = CharsetReader
 	if err := dec.Decode(&bxml); err != nil {
@@ -602,17 +601,17 @@ func NewBeerXml(r io.Reader) (bxml *BeerXml2, err error) {
 }
 
 // NewBeerXmlFromFile takes a filename as string and returns Recipes
-func NewBeerXmlFromFile(f string) (bxml *BeerXml2, err error) {
+func NewBeerXmlFromFile2(f string) (bxml *BeerXml2, err error) {
 	xmlFile, err := os.Open(f)
 	if err != nil {
 		return nil, err
 	}
 	defer xmlFile.Close()
-	return NewBeerXml(xmlFile)
+	return NewBeerXml2(xmlFile)
 }
 
 // TextSummary returns a string with a summary of Recipes including fermentables and hops
-func (bxml *BeerXml2) TextSummary() string {
+func (bxml *BeerXml2) TextSummaryxml2() string {
 	buf := ""
 	for x := range bxml.Recipes {
 		buf += fmt.Sprintf("Recipe (%d) : %s \n", x, bxml.Recipes[x].Name)

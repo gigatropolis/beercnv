@@ -11,7 +11,7 @@ import (
 	//"github.com/stone/beerxml2"
 
 	//"../xml/beerxml"
-	"../xml/beerxml2"
+	"../../beercnv"
 )
 
 func main() {
@@ -26,12 +26,12 @@ func main() {
 			fmt.Printf("Recipe.Name: %s", err.Error())
 		}
 	*/
-	beer2 := beerxml2.BeerXml2{}
+	beer2 := beercnv.BeerXml2{}
 	filename := "Recipies\\xml\\include-hops.xml"
 	//filename := "..\\Recipies\\xml\\include-hops.xml"
 	//filename := "Recipies\\xml\\nhc_2015.xml"
 
-	err := beerxml2.AddFromBeerXMLFile(&beer2, filename)
+	err := beercnv.AddFromBeerXMLFile(&beer2, filename)
 
 	if err != nil {
 		panic(err)

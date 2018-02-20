@@ -10,7 +10,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"golang.org/x/net/html/charset"
-	"io"
+	//"io"
 	//"io/ioutil"
 	"os"
 	"strconv"
@@ -19,7 +19,7 @@ import (
 func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 	//beer2 := beerxml2.BeerXml2{}
-	beer := beerxml.BeerXml{}
+	beer := BeerXml{}
 
 	//filename := "Recipies\\xml\\nhc_2015.xml"
 	//buf, err := ioutil.ReadFile(filename)
@@ -46,7 +46,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 	for _, recipe := range beer.Recipes {
 
-		rec := Recipe{}
+		rec := BeerRecipe{}
 		recIng := RecIngredients{}
 
 		rec.Name = recipe.Name
@@ -95,11 +95,11 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recIng.Hops = append(recIng.Hops, recHop)
 
-			var pInvHop *Hop
+			var pInvHop *InvHop
 			pInvHop = getInventoryHop(beer2.HopVarieties, hop.Name)
 
 			if pInvHop == nil {
-				pInvHop = new(Hop)
+				pInvHop = new(InvHop)
 				pInvHop.Name = hop.Name
 				pInvHop.Origin = hop.Origin
 				pInvHop.AlphaAcidUnits = hop.Alpha
@@ -145,11 +145,11 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recIng.Fermentables = append(recIng.Fermentables, recFerm)
 
-			var pInvFerm *Fermentable
+			var pInvFerm *InvFermentable
 			pInvFerm = getInventoryFermentable(beer2.Fermentables, ferm.Name)
 
 			if pInvFerm == nil {
-				pInvFerm = new(Fermentable)
+				pInvFerm = new(InvFermentable)
 
 				pInvFerm.Name = ferm.Name
 				pInvFerm.Type = ferm.Type
@@ -198,12 +198,12 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recIng.Miscs = append(recIng.Miscs, recMisc)
 
-			var pInvMisc *Misc
+			var pInvMisc *InvMisc
 			pInvMisc = getInventoryMisc(beer2.Miscs, misc.Name)
 
 			if pInvMisc == nil {
 
-				pInvMisc = new(Misc)
+				pInvMisc = new(InvMisc)
 
 				pInvMisc.Name = misc.Name
 				pInvMisc.Type = misc.Type
@@ -237,12 +237,12 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recIng.Waters = append(recIng.Waters, recWater)
 
-			var pInvWater *Water
+			var pInvWater *WaterProfile
 			pInvWater = getInventoryWater(beer2.Profiles, water.Name)
 
 			if pInvWater == nil {
 
-				pInvWater = new(Water)
+				pInvWater = new(WaterProfile)
 				pInvWater.Name = water.Name
 				pInvWater.Calcium = water.Calcium
 				pInvWater.Bicarbonate = water.Bicarbonate
@@ -279,12 +279,12 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recIng.Yeasts = append(recIng.Yeasts, recYeast)
 
-			var pInvYeast *Yeast
+			var pInvYeast *InvYeast
 			pInvYeast = getInventoryYeast(beer2.Cultures, yeast.Name)
 
 			if pInvYeast == nil {
 
-				pInvYeast = new(Yeast)
+				pInvYeast = new(InvYeast)
 
 				pInvYeast.Name = yeast.Name
 				pInvYeast.Type = yeast.Type
@@ -331,11 +331,11 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 		rec.Style = recStyle
 
-		var pInvStyle *Style
+		var pInvStyle *StyleProfile
 		pInvStyle = getInventoryStyle(beer2.Styles, recipe.Style.Name)
 
 		if pInvStyle == nil {
-			pInvStyle = new(Style)
+			pInvStyle = new(StyleProfile)
 			pInvStyle.Name = recipe.Style.Name
 			pInvStyle.Category = recipe.Style.Category
 			pInvStyle.CategoryNumber = recipe.Style.CategoryNumber
@@ -383,7 +383,7 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 		for _, mashStep := range recipe.Mash.MashSteps {
 
-			recMashStep := MashStep{}
+			recMashStep := RecMashStep{}
 
 			recMashStep.Name = mashStep.Name
 			recMashStep.Type = mashStep.Type
