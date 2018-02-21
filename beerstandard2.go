@@ -559,24 +559,25 @@ func getInventoryStyle(invStyle []StyleProfile, styleName string) *StyleProfile 
 	return nil
 }
 
-func (inv *HopInv) AddHopAmount(amount float32, mass string, form string) {
+func (inv *HopInv) AddHopAmount(amount float32, unit string, form string) {
 
 	if form == "Pellet" {
-		inv.Pellet.Units = mass
+		inv.Pellet.Units = unit
 		inv.Pellet.Amount += amount
 	} else if form == "Leaf" {
-		inv.Leaf.Units = mass
+		inv.Leaf.Units = unit
 		inv.Leaf.Amount += amount
 	} else if form == "Plug" {
-		inv.Plug.Units = mass
+		inv.Plug.Units = unit
 		inv.Plug.Amount += amount
 	} else {
 		fmt.Println("cant find form ", form)
 	}
 }
 
-func (inv *InventoryAmount) AddFermentationAmount(amount float32, mass string) {
-	//inv.Mass = mass
+func (inv *InventoryAmount) AddFermentationAmount(amount float32, unit string) {
+	fmt.Printf("FERM:%f\n", amount)
+	inv.Units = unit
 	inv.Amount += amount
 }
 
@@ -585,8 +586,8 @@ func (inv *InventoryMisc) AddMiscVolAmount(amount float32, volume string) {
 	inv.Amount.Amount += amount
 }
 
-func (inv *InventoryMisc) AddMiscMassAmount(amount float32, mass string) {
-	inv.AmountAsWeight.Units = mass
+func (inv *InventoryMisc) AddMiscMassAmount(amount float32, unit string) {
+	inv.AmountAsWeight.Units = unit
 	inv.AmountAsWeight.Weight += amount
 }
 

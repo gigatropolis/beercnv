@@ -113,13 +113,12 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 				pInvHop.Cohumulone = hop.Cohumulone
 				pInvHop.Myrcene = hop.Myrcene
 
+				pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
 				beer2.HopVarieties = append(beer2.HopVarieties, *pInvHop)
+			} else {
+
+				pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
 			}
-
-			pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
-
-			fmt.Printf("HOP:%s amt:%f t: %s\n", hop.Name, hop.Amount, hop.Time)
-			fmt.Printf("HopCount = %d", len(recIng.Hops))
 
 		}
 
@@ -171,10 +170,12 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 				pInvFerm.IbuGalPerLb = ferm.IbuGalPerLb
 				pInvFerm.Potential = ferm.Potential
 
+				pInvFerm.Inventory.AddFermentationAmount(ferm.Amount, "Kg")
 				beer2.Fermentables = append(beer2.Fermentables, *pInvFerm)
-			}
 
-			pInvFerm.Inventory.AddFermentationAmount(ferm.Amount, "Kg")
+			} else {
+				pInvFerm.Inventory.AddFermentationAmount(ferm.Amount, "Kg")
+			}
 		}
 
 		for _, misc := range recipe.Miscs {
@@ -210,15 +211,21 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 				pInvMisc.Use = misc.Use
 				pInvMisc.UseFor = misc.UseFor
 				pInvMisc.Notes = misc.Notes
-			}
+				if misc.AmountIsWeight {
+					pInvMisc.Inventory.AddMiscMassAmount(misc.Amount, "Kg")
+				} else {
+					pInvMisc.Inventory.AddMiscVolAmount(misc.Amount, "l")
+				}
 
-			if misc.AmountIsWeight {
-				pInvMisc.Inventory.AddMiscMassAmount(misc.Amount, "Kg")
+				beer2.Miscs = append(beer2.Miscs, *pInvMisc)
 			} else {
-				pInvMisc.Inventory.AddMiscVolAmount(misc.Amount, "l")
+				if misc.AmountIsWeight {
+					pInvMisc.Inventory.AddMiscMassAmount(misc.Amount, "Kg")
+				} else {
+					pInvMisc.Inventory.AddMiscVolAmount(misc.Amount, "l")
+				}
 			}
 
-			beer2.Miscs = append(beer2.Miscs, *pInvMisc)
 		}
 
 		for _, water := range recipe.Waters {
@@ -308,15 +315,23 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 					pInvYeast.Inventory.Culture.Date = yeast.CultureDate
 				}
 
+				if yeast.AmountIsWeight {
+					pInvYeast.Inventory.Dry.Units = "Kg"
+					pInvYeast.Inventory.Dry.Amount += yeast.Amount
+				} else {
+					pInvYeast.Inventory.Liquid.Units = "l"
+					pInvYeast.Inventory.Liquid.Amount += yeast.Amount
+				}
 				beer2.Cultures = append(beer2.Cultures, *pInvYeast)
-			}
-
-			if yeast.AmountIsWeight {
-				pInvYeast.Inventory.Dry.Units = "Kg"
-				pInvYeast.Inventory.Dry.Amount += yeast.Amount
 			} else {
-				pInvYeast.Inventory.Liquid.Units = "l"
-				pInvYeast.Inventory.Liquid.Amount += yeast.Amount
+
+				if yeast.AmountIsWeight {
+					pInvYeast.Inventory.Dry.Units = "Kg"
+					pInvYeast.Inventory.Dry.Amount += yeast.Amount
+				} else {
+					pInvYeast.Inventory.Liquid.Units = "l"
+					pInvYeast.Inventory.Liquid.Amount += yeast.Amount
+				}
 			}
 		}
 
