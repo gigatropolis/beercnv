@@ -75,21 +75,29 @@ type RecIngredients struct {
 
 // Recipe implements a BeerXML2 recipe including the different childs.
 type BeerRecipe struct {
-	XMLName         xml.Name        `xml:"recipe"`
-	Name            string          `xml:"name"`
-	Type            string          `xml:"type"`
-	Brewer          string          `xml:"brewer"`
-	AssistantBrewer string          `xml:"assistant_brewer"`
-	BatchSize       string          `xml:"batch_size"`
-	BoilSize        string          `xml:"boil_size"`
-	BoilTime        string          `xml:"boil_time"`
-	Efficiency      float32         `xml:"efficiency"`
-	Style           StyleAddition   `xml:"style"`
-	Ingredients     RecIngredients  `xml:"ingredients"`
-	Mash            MashProfile     `xml:"mash"`
-	Notes           string          `xml:"notes"`
-	Og              OriginalGravity `xml:"original_gravity"`
-	Fg              FinalGravity    `xml:"final_gravity"`
+	XMLName              xml.Name        `xml:"recipe"`
+	Name                 string          `xml:"name"`
+	Type                 string          `xml:"type"`
+	Brewer               string          `xml:"brewer"`
+	AssistantBrewer      string          `xml:"assistant_brewer"`
+	BatchSize            string          `xml:"batch_size"`
+	BoilSize             string          `xml:"boil_size"`
+	BoilTime             string          `xml:"boil_time"`
+	Efficiency           float32         `xml:"efficiency"`
+	Style                StyleAddition   `xml:"style"`
+	Ingredients          RecIngredients  `xml:"ingredients"`
+	Mash                 MashProfile     `xml:"mash"`
+	Notes                string          `xml:"notes"`
+	Og                   OriginalGravity `xml:"original_gravity"`
+	Fg                   FinalGravity    `xml:"final_gravity"`
+	DisplayBatchSize     string          `xml:"display_batch_size"`
+	DisplayBoilSize      string          `xml:"display_boil_size"`
+	DisplayOg            string          `xml:"display_og"`
+	DisplayFg            string          `xml:"display_fg"`
+	DisplayPrimaryTemp   string          `xml:"display_primary_temp"`
+	DisplaySecondaryTemp string          `xml:"display_secondary_temp"`
+	DisplayTertiaryTemp  string          `xml:"display_tertiary_temp"`
+	DisplayAgeTemp       string          `xml:"display_age_temp"`
 }
 
 type Leaf struct {
@@ -161,6 +169,9 @@ type HopAddition struct {
 	Use            string     `xml:"use"`
 	Amount         MassAmount `xml:"amount"`
 	Time           UseTime    `xml:"time"`
+	DisplayAmount  string     `xml:"display_amount"`
+	Inventory      string     `xml:"inventory"`
+	DisplayTime    string     `xml:"display_time"`
 }
 
 type Yield struct {
@@ -188,14 +199,17 @@ type InvFermentable struct {
 }
 
 type FermAddition struct {
-	XMLName      xml.Name   `xml:"fermentable"`
-	Name         string     `xml:"name"`
-	Type         string     `xml:"type"`
-	Color        Color      `xml:"color"`
-	Origin       string     `xml:"origin"`
-	Supplier     string     `xml:"supplier"`
-	Amount       MassAmount `xml:"amount"`
-	AddAfterBoil bool       `xml:"add_after_boil"`
+	XMLName       xml.Name   `xml:"fermentable"`
+	Name          string     `xml:"name"`
+	Type          string     `xml:"type"`
+	Color         Color      `xml:"color"`
+	Origin        string     `xml:"origin"`
+	Supplier      string     `xml:"supplier"`
+	Amount        MassAmount `xml:"amount"`
+	AddAfterBoil  bool       `xml:"add_after_boil"`
+	DisplayAmount string     `xml:"display_amount"`
+	Inventory     string     `xml:"inventory"`
+	DisplayColor  string     `xml:"display_color"`
 }
 
 type AlcTolerence struct {
@@ -280,6 +294,11 @@ type YeastAdditions struct {
 	AmountAsWeight WeightAmount `xml:"amount_as_weight"`
 	TimesCultured  int          `xml:"times_cultured"`
 	AddToSecondary bool         `xml:"add_to_secondary"`
+	DisplayAmount  string       `xml:"display_amount"`
+	DispMinTemp    string       `xml:"disp_min_temp"`
+	DispMaxTemp    string       `xml:"disp_max_temp"`
+	Inventory      string       `xml:"inventory"`
+	CultureDate    string       `xml:"culture_date"`
 }
 
 type MinDensity struct {
@@ -335,14 +354,21 @@ type StyleProfile struct {
 }
 
 type StyleAddition struct {
-	XMLName        xml.Name `xml:"style"`
-	Name           string   `xml:"name"`
-	Category       string   `xml:"category"`
-	CategoryNumber int      `xml:"category_number"`
-	StyleLetter    string   `xml:"style_letter"`
-	StyleGuide     string   `xml:"style_guide"`
-	Type           string   `xml:"type"`
+	XMLName         xml.Name `xml:"style"`
+	Name            string   `xml:"name"`
+	Category        string   `xml:"category"`
+	CategoryNumber  int      `xml:"category_number"`
+	StyleLetter     string   `xml:"style_letter"`
+	StyleGuide      string   `xml:"style_guide"`
+	Type            string   `xml:"type"`
+	DisplayOgMin    string   `xml:"display_og_min"`
+	DisplayOgMax    string   `xml:"display_og_max"`
+	DisplayFgMin    string   `xml:"display_fg_min"`
+	DisplayFgMax    string   `xml:"display_fg_max"`
+	DisplayColorMin string   `xml:"display_color_min"`
+	DisplayColorMax string   `xml:"display_color_max"`
 }
+
 type EquipmentUsed struct {
 	XMLName                xml.Name `xml:"equipment"`
 	Name                   string   `xml:"name"`
@@ -415,18 +441,20 @@ type InfuseDeg struct {
 }
 
 type RecMashStep struct {
-	XMLName         xml.Name  `xml:"step"`
-	Name            string    `xml:"name"`
-	Type            string    `xml:"type"`
-	InfuseAmount    InfuseVol `xml:"infuse_amount"`
-	StepTemp        StepDeg   `xml:"step_temperature"`
-	StepTime        StepDur   `xml:"step_time"`
-	RampTime        RampDur   `xml:"ramp_time"`
-	EndTemp         EndDeg    `xml:"end_temperature"`
-	Description     string    `xml:"description"`
-	WaterGrainRatio string    `xml:"water_grain_ratio"`
-	DecotionAmt     DecVol    `xml:"decoction_amount"`
-	InfuseTemp      InfuseDeg `xml:"infuse_temperature"`
+	XMLName          xml.Name  `xml:"step"`
+	Name             string    `xml:"name"`
+	Type             string    `xml:"type"`
+	InfuseAmount     InfuseVol `xml:"infuse_amount"`
+	StepTemp         StepDeg   `xml:"step_temperature"`
+	StepTime         StepDur   `xml:"step_time"`
+	RampTime         RampDur   `xml:"ramp_time"`
+	EndTemp          EndDeg    `xml:"end_temperature"`
+	Description      string    `xml:"description"`
+	WaterGrainRatio  string    `xml:"water_grain_ratio"`
+	DecotionAmt      DecVol    `xml:"decoction_amount"`
+	InfuseTemp       InfuseDeg `xml:"infuse_temperature"`
+	DisplayStepTemp  string    `xml:"display_step_temp"`
+	DisplayInfuseAmt string    `xml:"display_infuse_amt"`
 }
 
 type GrainDeg struct {
@@ -442,13 +470,17 @@ type SpargeDeg struct {
 }
 
 type MashProfile struct {
-	XMLName    xml.Name      `xml:"mash"`
-	Name       string        `xml:"name"`
-	GrainTemp  GrainDeg      `xml:"grain_temperature"`
-	SpargeTemp SpargeDeg     `xml:"sparge_temperature"`
-	Ph         float32       `xml:"pH"`
-	Notes      string        `xml:"notes"`
-	MashSteps  []RecMashStep `xml:"mash_steps"`
+	XMLName           xml.Name      `xml:"mash"`
+	Name              string        `xml:"name"`
+	GrainTemp         GrainDeg      `xml:"grain_temperature"`
+	SpargeTemp        SpargeDeg     `xml:"sparge_temperature"`
+	Ph                float32       `xml:"pH"`
+	Notes             string        `xml:"notes"`
+	MashSteps         []RecMashStep `xml:"mash_steps"`
+	DisplayGrainTemp  string        `xml:"display_grain_temp"`
+	DisplayTunTemp    string        `xml:"display_tun_temp"`
+	DisplaySpargeTemp string        `xml:"display_sparge_temp"`
+	DisplayTunWeight  string        `xml:"display_tun_weight"`
 }
 
 type WaterProfile struct {
@@ -465,15 +497,16 @@ type WaterProfile struct {
 }
 
 type WaterAddition struct {
-	XMLName     xml.Name  `xml:"water"`
-	Name        string    `xml:"name"`
-	Calcium     float32   `xml:"calcium"`
-	Bicarbonate float32   `xml:"bicarbonate"`
-	Sulfate     float32   `xml:"sulfate"`
-	Chloride    float32   `xml:"chloride"`
-	Sodium      float32   `xml:"sodium"`
-	Magnesium   float32   `xml:"magnesium"`
-	Amount      VolAmount `xml:"amount"`
+	XMLName       xml.Name  `xml:"water"`
+	Name          string    `xml:"name"`
+	Calcium       float32   `xml:"calcium"`
+	Bicarbonate   float32   `xml:"bicarbonate"`
+	Sulfate       float32   `xml:"sulfate"`
+	Chloride      float32   `xml:"chloride"`
+	Sodium        float32   `xml:"sodium"`
+	Magnesium     float32   `xml:"magnesium"`
+	Amount        VolAmount `xml:"amount"`
+	DisplayAmount string    `xml:"display_amount"`
 }
 
 type InventoryMisc struct {
@@ -499,6 +532,9 @@ type MiscAdditions struct {
 	Amount         VolAmount    `xml:"amount"`
 	AmountAsWeight WeightAmount `xml:"amount_as_weight"`
 	Time           UseTime      `xml:"time"`
+	DisplayAmount  string       `xml:"display_amount"`
+	Inventory      string       `xml:"inventory"`
+	DisplayTime    string       `xml:"display_time"`
 }
 
 func (xml *BeerXml2) Init() {
@@ -576,7 +612,6 @@ func (inv *HopInv) AddHopAmount(amount float32, unit string, form string) {
 }
 
 func (inv *InventoryAmount) AddFermentationAmount(amount float32, unit string) {
-	fmt.Printf("FERM:%f\n", amount)
 	inv.Units = unit
 	inv.Amount += amount
 }

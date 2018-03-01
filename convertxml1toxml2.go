@@ -69,6 +69,15 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 		recFg.Fg = recipe.Fg
 		rec.Fg = recFg
 
+		rec.DisplayBatchSize = recipe.DisplayBatchSize
+		rec.DisplayBoilSize = recipe.DisplayBoilSize
+		rec.DisplayOg = recipe.DisplayOg
+		rec.DisplayFg = recipe.DisplayFg
+		rec.DisplayPrimaryTemp = recipe.DisplayPrimaryTemp
+		rec.DisplaySecondaryTemp = recipe.DisplaySecondaryTemp
+		rec.DisplayTertiaryTemp = recipe.DisplayTertiaryTemp
+		rec.DisplayAgeTemp = recipe.DisplayAgeTemp
+
 		for _, hop := range recipe.Hops {
 
 			recHop := HopAddition{}
@@ -92,6 +101,10 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recMass.Units = "Kg"
 			recMass.Amount = hop.Amount
 			recHop.Amount = recMass
+
+			recHop.DisplayAmount = hop.DisplayAmount
+			recHop.Inventory = hop.Inventory
+			recHop.DisplayTime = hop.DisplayTime
 
 			recIng.Hops = append(recIng.Hops, recHop)
 
@@ -141,6 +154,10 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 
 			recFerm.Amount.Units = "Kg"
 			recFerm.Amount.Amount = ferm.Amount
+
+			recFerm.DisplayAmount = ferm.DisplayAmount
+			recFerm.Inventory = ferm.Inventory
+			recFerm.DisplayColor = ferm.DisplayColor
 
 			recIng.Fermentables = append(recIng.Fermentables, recFerm)
 
@@ -197,6 +214,10 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recMisc.Time.Units = "min"
 			recMisc.Time.Time = misc.Time
 
+			recMisc.DisplayAmount = misc.DisplayAmount
+			recMisc.Inventory = misc.Inventory
+			recMisc.DisplayTime = misc.DisplayTime
+
 			recIng.Miscs = append(recIng.Miscs, recMisc)
 
 			var pInvMisc *InvMisc
@@ -242,6 +263,8 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recWater.Amount.Units = "l"
 			recWater.Amount.Amount = water.Amount
 
+			recWater.DisplayAmount = water.DisplayAmount
+
 			recIng.Waters = append(recIng.Waters, recWater)
 
 			var pInvWater *WaterProfile
@@ -283,6 +306,12 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			}
 
 			recYeast.TimesCultured = yeast.TimesCultured
+
+			recYeast.DisplayAmount = yeast.DisplayAmount
+			recYeast.DispMinTemp = yeast.DispMinTemp
+			recYeast.DispMaxTemp = yeast.DispMaxTemp
+			recYeast.Inventory = yeast.Inventory
+			recYeast.CultureDate = yeast.CultureDate
 
 			recIng.Yeasts = append(recIng.Yeasts, recYeast)
 
@@ -344,6 +373,13 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 		recStyle.StyleGuide = recipe.Style.StyleGuide
 		recStyle.Type = recipe.Style.Type
 
+		recStyle.DisplayOgMin = recipe.Style.DisplayOgMin
+		recStyle.DisplayOgMax = recipe.Style.DisplayOgMax
+		recStyle.DisplayFgMin = recipe.Style.DisplayFgMin
+		recStyle.DisplayFgMax = recipe.Style.DisplayFgMax
+		recStyle.DisplayColorMin = recipe.Style.DisplayColorMin
+		recStyle.DisplayColorMax = recipe.Style.DisplayColorMax
+
 		rec.Style = recStyle
 
 		var pInvStyle *StyleProfile
@@ -396,6 +432,11 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 		rec.Mash.Ph = mash.Ph
 		rec.Mash.Notes = mash.Notes
 
+		rec.Mash.DisplayGrainTemp = mash.DisplayGrainTemp
+		rec.Mash.DisplayTunTemp = mash.DisplayTunTemp
+		rec.Mash.DisplaySpargeTemp = mash.DisplaySpargeTemp
+		rec.Mash.DisplayTunWeight = mash.DisplayTunWeight
+
 		for _, mashStep := range recipe.Mash.MashSteps {
 
 			recMashStep := RecMashStep{}
@@ -418,6 +459,9 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			//recMashStep.InfuseTemp.Degrees = mashStep.InfuseTemp
 			//recMashStep.DecotionAmt.Units = "L"
 			//recMashStep.DecotionAmt.Amount = mashStep.DecotionAmt
+
+			recMashStep.DisplayStepTemp = mashStep.DisplayStepTemp
+			recMashStep.DisplayInfuseAmt = mashStep.DisplayInfuseAmt
 
 			rec.Mash.MashSteps = append(rec.Mash.MashSteps, recMashStep)
 		}
