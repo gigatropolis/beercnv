@@ -27,9 +27,9 @@ func main() {
 		}
 	*/
 	beer2 := beercnv.BeerXml2{}
-	filename := "Recipies\\xml\\include-hops.xml"
+	//filename := "Recipies\\xml\\include-hops.xml"
 	//filename := "..\\Recipies\\xml\\include-hops.xml"
-	//filename := "Recipies\\xml\\nhc_2015.xml"
+	filename := "Recipies\\xml\\nhc_2015.xml"
 
 	err := beercnv.AddFromBeerXMLFile(&beer2, filename)
 

@@ -476,11 +476,11 @@ type MashProfile struct {
 	SpargeTemp        SpargeDeg     `xml:"sparge_temperature"`
 	Ph                float32       `xml:"pH"`
 	Notes             string        `xml:"notes"`
-	MashSteps         []RecMashStep `xml:"mash_steps"`
 	DisplayGrainTemp  string        `xml:"display_grain_temp"`
 	DisplayTunTemp    string        `xml:"display_tun_temp"`
 	DisplaySpargeTemp string        `xml:"display_sparge_temp"`
 	DisplayTunWeight  string        `xml:"display_tun_weight"`
+	MashSteps         []RecMashStep `xml:"mash_steps"`
 }
 
 type WaterProfile struct {

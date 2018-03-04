@@ -13,6 +13,7 @@ import (
 	//"io"
 	//"io/ioutil"
 	"os"
+	"regexp"
 	"strconv"
 )
 
@@ -455,10 +456,26 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 			recMashStep.EndTemp.Degrees = mashStep.EndTemp
 			recMashStep.Description = mashStep.Description
 			recMashStep.WaterGrainRatio = mashStep.WaterGrainRatio
-			//recMashStep.InfuseTemp.Units = "C"
-			//recMashStep.InfuseTemp.Degrees = mashStep.InfuseTemp
-			//recMashStep.DecotionAmt.Units = "L"
-			//recMashStep.DecotionAmt.Amount = mashStep.DecotionAmt
+
+			re := regexp.MustCompile(`([0-9]+\.[0-9]+)\s*(\w+)`)
+			infuseMatch := re.FindAllStringSubmatch(mashStep.InfuseTemp, 1)
+			decoctionMatch := re.FindAllStringSubmatch(mashStep.DecotionAmt, 1)
+
+			if infuseMatch != nil {
+				recMashStep.InfuseTemp.Units = infuseMatch[0][2]
+				iInfuse, err := strconv.ParseFloat(infuseMatch[0][1], 32)
+				if err != nil {
+					recMashStep.InfuseTemp.Degrees = float32(iInfuse)
+				}
+			}
+
+			if decoctionMatch != nil {
+				recMashStep.DecotionAmt.Units = decoctionMatch[0][2]
+				iDecoction, err := strconv.ParseFloat(decoctionMatch[0][1], 32)
+				if err != nil {
+					recMashStep.DecotionAmt.Amount = float32(iDecoction)
+				}
+			}
 
 			recMashStep.DisplayStepTemp = mashStep.DisplayStepTemp
 			recMashStep.DisplayInfuseAmt = mashStep.DisplayInfuseAmt
