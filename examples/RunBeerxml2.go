@@ -31,7 +31,13 @@ func main() {
 	//filename := "..\\Recipies\\xml\\include-hops.xml"
 	filename := "Recipies\\xml\\nhc_2015.xml"
 
-	err := beercnv.AddFromBeerXMLFile(&beer2, filename)
+	xmlFile, err := os.Open(filename)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = beercnv.ConvertXML1to2(xmlFile, &beer2)
 
 	if err != nil {
 		panic(err)

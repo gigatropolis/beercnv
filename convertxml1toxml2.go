@@ -10,14 +10,14 @@ import (
 	"encoding/xml"
 	"fmt"
 	"golang.org/x/net/html/charset"
-	//"io"
+	"io"
 	//"io/ioutil"
-	"os"
+	//"os"
 	"regexp"
 	"strconv"
 )
 
-func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
+func ConvertXML1to2(xml1 io.Reader, beer2 *BeerXml2) error {
 
 	//beer2 := beerxml2.BeerXml2{}
 	beer := BeerXml{}
@@ -25,19 +25,13 @@ func AddFromBeerXMLFile(beer2 *BeerXml2, filename string) error {
 	//filename := "Recipies\\xml\\nhc_2015.xml"
 	//buf, err := ioutil.ReadFile(filename)
 
-	xmlFile, err := os.Open(filename)
-
-	if err != nil {
-		panic(err)
-	}
-
 	//decoder := xml.NewDecoder(reader)
 	//decoder.CharsetReader = charset.NewReaderLabel
 	//err = decoder.Decode(&parsed)
 
-	p := xml.NewDecoder(xmlFile)
+	p := xml.NewDecoder(xml1)
 	p.CharsetReader = charset.NewReaderLabel
-	err = p.Decode(&beer)
+	err := p.Decode(&beer)
 
 	//err = xml.Unmarshal(buf, &beer)
 
