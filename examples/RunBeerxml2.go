@@ -14,6 +14,8 @@ import (
 	"../../beercnv"
 )
 
+// $.map($('.recipe-link'), m=>m.href).forEach(recipe=>{window.open(`${recipe}.xml`, '_blank')})
+
 func main() {
 
 	/*
@@ -28,8 +30,8 @@ func main() {
 	*/
 	beer2 := beercnv.BeerXml2{}
 	//filename := "Recipies\\xml\\include-hops.xml"
-	//filename := "..\\Recipies\\xml\\include-hops.xml"
-	filename := "Recipies\\xml\\nhc_2015.xml"
+	filename := "Recipies\\xml\\include-hops.xml"
+	//filename := "Recipies\\xml\\nhc_2015.xml"
 
 	xmlFile, err := os.Open(filename)
 
