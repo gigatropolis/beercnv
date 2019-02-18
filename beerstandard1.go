@@ -11,10 +11,11 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 )
 
-// BeerXml holds a slice of Recipes
-type BeerXml struct {
+// BeerXML holds a slice of Recipes
+type BeerXML struct {
 	XMLName xml.Name `xml:"RECIPES"`
 	Recipes []Recipe `xml:"RECIPE"`
 }
@@ -27,9 +28,9 @@ type Recipe struct {
 	Type                 string        `xml:"TYPE"`
 	Brewer               string        `xml:"BREWER"`
 	AssistantBrewer      string        `xml:"ASST_BREWER"`
-	BatchSize            string        `xml:"BATCH_SIZE"`
-	BoilSize             string        `xml:"BOIL_SIZE"`
-	BoilTime             string        `xml:"BOIL_TIME"`
+	BatchSize            float32       `xml:"BATCH_SIZE"`
+	BoilSize             float32       `xml:"BOIL_SIZE"`
+	BoilTime             int           `xml:"BOIL_TIME"`
 	Efficiency           float32       `xml:"EFFICIENCY"`
 	Hops                 []Hop         `xml:"HOPS>HOP"`
 	Fermentables         []Fermentable `xml:"FERMENTABLES>FERMENTABLE"`
@@ -79,6 +80,7 @@ type Recipe struct {
 	DisplayAgeTemp       string        `xml:"DISPLAY_AGE_TEMP"`
 }
 
+// Hop definition
 type Hop struct {
 	XMLName       xml.Name `xml:"HOP"`
 	Name          string   `xml:"NAME"`
@@ -102,6 +104,7 @@ type Hop struct {
 	DisplayTime   string   `xml:"DISPLAY_TIME"`
 }
 
+// Fermentable definition
 type Fermentable struct {
 	XMLName           xml.Name `xml:"FERMENTABLE"`
 	Name              string   `xml:"NAME"`
@@ -128,6 +131,7 @@ type Fermentable struct {
 	ExtractSubstitute string   `xml:"EXTRACT_SUBSTITUTE"`
 }
 
+// Yeast definition
 type Yeast struct {
 	XMLName        xml.Name `xml:"YEAST"`
 	Name           string   `xml:"NAME"`
@@ -154,6 +158,7 @@ type Yeast struct {
 	CultureDate    string   `xml:"CULTURE_DATE"`
 }
 
+//Style defines beer styles
 type Style struct {
 	XMLName         xml.Name `xml:"STYLE"`
 	Name            string   `xml:"NAME"`
@@ -193,6 +198,7 @@ type Style struct {
 	AbvRange        string   `xml:"ABV_RANGE"`
 }
 
+// Equipment profiles for brewin beer
 type Equipment struct {
 	XMLName                xml.Name `xml:"EQUIPMENT"`
 	Name                   string   `xml:"NAME"`
@@ -222,6 +228,7 @@ type Equipment struct {
 	DisplayTopUpKettle     string   `xml:"DISPLAY_TOP_UP_KETTLE"`
 }
 
+// Mash is struct defining mash type
 type Mash struct {
 	XMLName           xml.Name   `xml:"MASH"`
 	Name              string     `xml:"NAME"`
@@ -241,6 +248,7 @@ type Mash struct {
 	MashSteps         []MashStep `xml:"MASH_STEPS>MASH_STEP"`
 }
 
+// MashStep ia single step for a mash profile
 type MashStep struct {
 	XMLName          xml.Name `xml:"MASH_STEP"`
 	Name             string   `xml:"NAME"`
@@ -259,6 +267,7 @@ type MashStep struct {
 	DisplayInfuseAmt string   `xml:"DISPLAY_INFUSE_AMT"`
 }
 
+// Water definition used in brewing process
 type Water struct {
 	XMLName       xml.Name `xml:"WATER"`
 	Name          string   `xml:"NAME"`
@@ -275,6 +284,7 @@ type Water struct {
 	DisplayAmount string   `xml:"DISPLAY_AMOUNT"`
 }
 
+// Misc is miscellaneous ingredients used in beer
 type Misc struct {
 	XMLName        xml.Name `xml:"MISC"`
 	Name           string   `xml:"NAME"`
@@ -291,35 +301,71 @@ type Misc struct {
 	DisplayTime    string   `xml:"DISPLAY_TIME"`
 }
 
-// NewBeerXml takes a io.Reader and returns Recipes
-func NewBeerXml(r io.Reader) (bxml *BeerXml, err error) {
+// NewBeerXML takes a io.Reader and returns Recipes
+func NewBeerXML(r io.Reader, pBXml *BeerXML) error {
 	dec := xml.NewDecoder(r)
+
 	// dec.CharsetReader = CharsetReader
-	if err := dec.Decode(&bxml); err != nil {
-		return nil, err
+	if err := dec.Decode(pBXml); err != nil {
+		return err
 	}
-	return bxml, nil
+	return nil
 }
 
-// NewBeerXmlFromFile takes a filename as string and returns Recipes
-func NewBeerXmlFromFile(f string) (bxml *BeerXml, err error) {
+// NewBeerXMLFromFile takes a filename as string and returns Recipes
+func NewBeerXMLFromFile(f string) (BeerXML, error) {
+
+	beer := BeerXML{}
 	xmlFile, err := os.Open(f)
 	if err != nil {
-		return nil, err
+		return beer, err
 	}
 	defer xmlFile.Close()
-	return NewBeerXml(xmlFile)
+
+	err2 := NewBeerXML(xmlFile, &beer)
+	if err2 != nil {
+		return beer, err2
+	}
+
+	for _, b := range beer.Recipes {
+
+		for i, hop := range b.Hops {
+			if hop.Type == "" {
+				b.Hops[i].Type = "Both"
+			}
+		}
+
+		for i, ferm := range b.Fermentables {
+
+			fermType := strings.ToLower(ferm.Type)
+
+			if fermType == "liquid extract" {
+				b.Fermentables[i].Type = "Extract"
+				continue
+			}
+
+			if fermType == "base malt" ||
+				fermType == "kilned malt" ||
+				fermType == "caramel/crystal malt" ||
+				fermType == "roasted malt" {
+				b.Fermentables[i].Type = "Grain"
+				continue
+			}
+		}
+	}
+
+	return beer, nil
 }
 
 // TextSummary returns a string with a summary of Recipes including fermentables and hops
-func (bxml *BeerXml) TextSummary() string {
+func (bxml *BeerXML) TextSummary() string {
 	buf := ""
 	for x := range bxml.Recipes {
 		buf += fmt.Sprintf("Recipe (%d) : %s \n", x, bxml.Recipes[x].Name)
 		buf += fmt.Sprintf("Type: %s\n", bxml.Recipes[x].Type)
-		buf += fmt.Sprintf("Batch Size: %s\n", bxml.Recipes[x].BatchSize)
-		buf += fmt.Sprintf("Boil Size: %s\n", bxml.Recipes[x].BoilSize)
-		buf += fmt.Sprintf("Boil Time: %s\n", bxml.Recipes[x].BoilTime)
+		buf += fmt.Sprintf("Batch Size: %f\n", bxml.Recipes[x].BatchSize)
+		buf += fmt.Sprintf("Boil Size: %f\n", bxml.Recipes[x].BoilSize)
+		buf += fmt.Sprintf("Boil Time: %d\n", bxml.Recipes[x].BoilTime)
 		for f := range bxml.Recipes[x].Fermentables {
 			buf += fmt.Sprintf("Fermentable: %d : %s : %s\n", f, bxml.Recipes[x].Fermentables[f].Name,
 				bxml.Recipes[x].Fermentables[f].DisplayAmount)

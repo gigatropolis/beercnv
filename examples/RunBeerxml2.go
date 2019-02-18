@@ -8,7 +8,7 @@ import (
 	"os"
 	//"strconv"
 	//"github.com/beerxml"
-	//"github.com/stone/beerxml2"
+	//"github.com/stone/beerxML2"
 
 	//"../xml/beerxml"
 	"../../beercnv"
@@ -28,7 +28,7 @@ func main() {
 			fmt.Printf("Recipe.Name: %s", err.Error())
 		}
 	*/
-	beer2 := beercnv.BeerXml2{}
+	beer2 := beercnv.BeerXML2{}
 	//filename := "Recipies\\xml\\include-hops.xml"
 	filename := "Recipies\\xml\\include-hops.xml"
 	//filename := "Recipies\\xml\\nhc_2015.xml"

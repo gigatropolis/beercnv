@@ -9,18 +9,20 @@ package beercnv
 import (
 	"encoding/xml"
 	"fmt"
-	"golang.org/x/net/html/charset"
 	"io"
+	"strings"
+
+	"golang.org/x/net/html/charset"
 	//"io/ioutil"
 	//"os"
 	"regexp"
 	"strconv"
 )
 
-func ConvertXML1to2(xml1 io.Reader, beer2 *BeerXml2) error {
+func ConvertXML1to2(xml1 io.Reader, beer2 *BeerXML2) error {
 
-	//beer2 := beerxml2.BeerXml2{}
-	beer := BeerXml{}
+	//beer2 := beerxML2.BeerXML2{}
+	beer := BeerXML{}
 
 	//filename := "Recipies\\xml\\nhc_2015.xml"
 	//buf, err := ioutil.ReadFile(filename)
@@ -80,8 +82,8 @@ func ConvertXML1to2(xml1 io.Reader, beer2 *BeerXml2) error {
 			recHop.Name = hop.Name
 			recHop.Origin = hop.Origin
 			recHop.AlphaAcidUnits = hop.Alpha
-			recHop.Use = hop.Use
-			recHop.Form = hop.Form
+			recHop.Use = strings.ToLower(hop.Use)
+			recHop.Form = strings.ToLower(hop.Form)
 
 			hopTime := UseTime{}
 			hopTime.Units = "min"
@@ -113,21 +115,21 @@ func ConvertXML1to2(xml1 io.Reader, beer2 *BeerXml2) error {
 				pInvHop.AlphaAcidUnits = hop.Alpha
 				pInvHop.BetaAcidUnits = hop.Beta
 
-				pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
-				pInvHop.Type = hop.Type
+				pInvHop.Type = strings.ToLower(hop.Type)
+
+				if pInvHop.Type == "" {
+					pInvHop.Type = "both"
+				}
+
 				pInvHop.Notes = hop.Notes
 				pInvHop.Humulene = hop.Humulene
 				pInvHop.Caryophyllene = hop.Caryophyllene
 				pInvHop.Cohumulone = hop.Cohumulone
 				pInvHop.Myrcene = hop.Myrcene
 
-				pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
 				beer2.HopVarieties = append(beer2.HopVarieties, *pInvHop)
-			} else {
-
-				pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
 			}
-
+			pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
 		}
 
 		for _, ferm := range recipe.Fermentables {
@@ -140,11 +142,24 @@ func ConvertXML1to2(xml1 io.Reader, beer2 *BeerXml2) error {
 			recFerm.Supplier = ferm.Supplier
 			recFerm.AddAfterBoil = ferm.AddAfterBoil
 
-			if ferm.Type == "Extract" {
+			recFerm.Type = strings.ToLower(ferm.Type)
+			if recFerm.Type == "liquid extract" {
+				recFerm.Type = "extract"
+			}
+
+			if recFerm.Type == "extract" {
 				recFerm.Color.Units = "SRM"
 			} else {
 				recFerm.Color.Units = "L"
 			}
+
+			if recFerm.Type == "base malt" ||
+				recFerm.Type == "kilned malt" ||
+				recFerm.Type == "caramel/crystal malt" ||
+				recFerm.Type == "roasted malt" {
+				recFerm.Type = "grain"
+			}
+
 			recFerm.Color.Color = ferm.Color
 
 			recFerm.Amount.Units = "Kg"
@@ -182,12 +197,10 @@ func ConvertXML1to2(xml1 io.Reader, beer2 *BeerXml2) error {
 				pInvFerm.IbuGalPerLb = ferm.IbuGalPerLb
 				pInvFerm.Potential = ferm.Potential
 
-				pInvFerm.Inventory.AddFermentationAmount(ferm.Amount, "Kg")
 				beer2.Fermentables = append(beer2.Fermentables, *pInvFerm)
 
-			} else {
-				pInvFerm.Inventory.AddFermentationAmount(ferm.Amount, "Kg")
 			}
+			pInvFerm.Inventory.AddFermentationAmount(ferm.Amount, "Kg")
 		}
 
 		for _, misc := range recipe.Miscs {
@@ -227,21 +240,14 @@ func ConvertXML1to2(xml1 io.Reader, beer2 *BeerXml2) error {
 				pInvMisc.Use = misc.Use
 				pInvMisc.UseFor = misc.UseFor
 				pInvMisc.Notes = misc.Notes
-				if misc.AmountIsWeight {
-					pInvMisc.Inventory.AddMiscMassAmount(misc.Amount, "Kg")
-				} else {
-					pInvMisc.Inventory.AddMiscVolAmount(misc.Amount, "l")
-				}
 
 				beer2.Miscs = append(beer2.Miscs, *pInvMisc)
-			} else {
-				if misc.AmountIsWeight {
-					pInvMisc.Inventory.AddMiscMassAmount(misc.Amount, "Kg")
-				} else {
-					pInvMisc.Inventory.AddMiscVolAmount(misc.Amount, "l")
-				}
 			}
-
+			if misc.AmountIsWeight {
+				pInvMisc.Inventory.AddMiscMassAmount(misc.Amount, "Kg")
+			} else {
+				pInvMisc.Inventory.AddMiscVolAmount(misc.Amount, "l")
+			}
 		}
 
 		for _, water := range recipe.Waters {

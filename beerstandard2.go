@@ -15,43 +15,49 @@ import (
 	//"strconv"
 )
 
+// Color is beer color with units SRM or L
 type Color struct {
 	//XMLName xml.Name `xml:"color"`
 	Units string  `xml:"units,attr"`
 	Color float32 `xml:",chardata"`
 }
 
+// ColorScale is max tolerece of a beer color for given style
 type ColorScale struct {
 	Minimum Color `xml:"minimum"`
 	Maximum Color `xml:"maximum"`
 }
 
+// VolAmount is amount of liquid with units
 type VolAmount struct {
 	XMLName xml.Name `xml:"amount"`
 	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
+// WeightAmount is weight amount by unit type provided
 type WeightAmount struct {
 	XMLName xml.Name `xml:"amount_as_weight"`
 	Units   string   `xml:"units,attr"`
 	Weight  float32  `xml:",chardata"`
 }
 
+// OriginalGravity is Original Gravity by units (plato, brix, gravity)
 type OriginalGravity struct {
 	XMLName xml.Name `xml:"original_gravity"`
 	Units   string   `xml:"units,attr"`
 	Og      float32  `xml:",chardata"`
 }
 
+//FinalGravity is Final Gravity by units (plato, brix, gravity)
 type FinalGravity struct {
 	XMLName xml.Name `xml:"final_gravity"`
 	Units   string   `xml:"units,attr"`
 	Fg      float32  `xml:",chardata"`
 }
 
-// Recipes holds a slice of Rrecipes
-type BeerXml2 struct {
+// BeerXML2 holds all beer information. first level
+type BeerXML2 struct {
 	XMLName      xml.Name         `xml:"beer_xml"`
 	Version      string           `xml:"version"`
 	HopVarieties []InvHop         `xml:"hop_varieties>hop"`
@@ -64,6 +70,7 @@ type BeerXml2 struct {
 	Recipes      []BeerRecipe     `xml:"recipes>recipe"`
 }
 
+// RecIngredients is superset of all infredient types in the recipe
 type RecIngredients struct {
 	Hops         []HopAddition    `xml:"hop_bill>hop"`
 	Fermentables []FermAddition   `xml:"grain_bill>fermentable"`
@@ -73,16 +80,16 @@ type RecIngredients struct {
 	Equipment    []EquipmentUsed  `xml:"Equipment,omitempty"`
 }
 
-// Recipe implements a BeerXML2 recipe including the different childs.
+// BeerRecipe implements a BeerXML2 recipe including the different childs.
 type BeerRecipe struct {
 	XMLName              xml.Name        `xml:"recipe"`
 	Name                 string          `xml:"name"`
 	Type                 string          `xml:"type"`
 	Brewer               string          `xml:"brewer"`
 	AssistantBrewer      string          `xml:"assistant_brewer"`
-	BatchSize            string          `xml:"batch_size"`
-	BoilSize             string          `xml:"boil_size"`
-	BoilTime             string          `xml:"boil_time"`
+	BatchSize            float32         `xml:"batch_size"`
+	BoilSize             float32         `xml:"boil_size"`
+	BoilTime             int             `xml:"boil_time"`
 	Efficiency           float32         `xml:"efficiency"`
 	Style                StyleAddition   `xml:"style"`
 	Ingredients          RecIngredients  `xml:"ingredients"`
@@ -100,30 +107,35 @@ type BeerRecipe struct {
 	DisplayAgeTemp       string          `xml:"display_age_temp"`
 }
 
+// Leaf is amount of hops inventory in leaf form
 type Leaf struct {
 	XMLName xml.Name `xml:"leaf"`
 	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
+// Pellet is amount of hops inventory in pellet form
 type Pellet struct {
 	XMLName xml.Name `xml:"pellet"`
 	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
+// Plug is amount of hops inventory in plug form
 type Plug struct {
 	XMLName xml.Name `xml:"plug"`
 	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardate"`
 }
 
+// HopInv is total hops inventory for all hops in form leaf, pellet, and plugs
 type HopInv struct {
 	Leaf   Leaf   `xml:"leaf"`
 	Pellet Pellet `xml:"pellet"`
 	Plug   Plug   `xml:"plug"`
 }
 
+// InvHop describes a hop stored in inventory
 type InvHop struct {
 	XMLName        xml.Name `xml:"hop"`
 	Name           string   `xml:"name"`
@@ -141,24 +153,28 @@ type InvHop struct {
 	Inventory      HopInv   `xml:"inventory"`
 }
 
+// MassAmount is total mass amount specified by units
 type MassAmount struct {
 	XMLName xml.Name `xml:"amount"`
 	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
+// InventoryAmount is total mass of fermentables specified by units
 type InventoryAmount struct {
 	XMLName xml.Name `xml:"inventory"`
 	Units   string   `xml:"units,attr"`
 	Amount  float32  `xml:",chardata"`
 }
 
+// UseTime time hops added to brew
 type UseTime struct {
 	XMLName xml.Name `xml:"time"`
 	Units   string   `xml:"units,attr"`
 	Time    float32  `xml:",chardata"`
 }
 
+// HopAddition describes hop and its brewing attributes added to a recipe
 type HopAddition struct {
 	XMLName        xml.Name   `xml:"hop"`
 	Name           string     `xml:"name"`
@@ -174,11 +190,13 @@ type HopAddition struct {
 	DisplayTime    string     `xml:"display_time"`
 }
 
+// Yield is total for fine and coarsce grain for dry usage
 type Yield struct {
 	FineGrind      float32 `xml:"fine_grind"`
 	CoarseFineDiff float32 `xml:"fine_coarse_difference"`
 }
 
+// InvFermentable describes fermentable stored in inventory
 type InvFermentable struct {
 	XMLName        xml.Name        `xml:"fermentable"`
 	Name           string          `xml:"name"`
@@ -198,6 +216,7 @@ type InvFermentable struct {
 	Potential      float32         `xml:"potential"`
 }
 
+// FermAddition is fermentable ingredient added to a rrecipe
 type FermAddition struct {
 	XMLName       xml.Name   `xml:"fermentable"`
 	Name          string     `xml:"name"`
@@ -212,11 +231,13 @@ type FermAddition struct {
 	DisplayColor  string     `xml:"display_color"`
 }
 
+// AlcTolerence minimum and maximun alcohol tolerence for perticular yeast
 type AlcTolerence struct {
 	Minimum float32 `xml:"minimum"`
 	Maximum float32 `xml:"maximum"`
 }
 
+// LiquidAmount Liquid Amount in yeast sample by units
 type LiquidAmount struct {
 	XMLName xml.Name `xml:"liquid"`
 	Units   string   `xml:"units,attr"`
@@ -537,7 +558,7 @@ type MiscAdditions struct {
 	DisplayTime    string       `xml:"display_time"`
 }
 
-func (xml *BeerXml2) Init() {
+func (xml *BeerXML2) Init() {
 	xml.Version = "2.0"
 }
 
@@ -627,7 +648,7 @@ func (inv *InventoryMisc) AddMiscMassAmount(amount float32, unit string) {
 }
 
 // NewBeerXml takes a io.Reader and returns Recipes
-func NewBeerXml2(r io.Reader) (bxml *BeerXml2, err error) {
+func NewBeerXML2(r io.Reader) (bxml *BeerXML2, err error) {
 	dec := xml.NewDecoder(r)
 	//dec.CharsetReader = CharsetReader
 	if err := dec.Decode(&bxml); err != nil {
@@ -637,17 +658,17 @@ func NewBeerXml2(r io.Reader) (bxml *BeerXml2, err error) {
 }
 
 // NewBeerXmlFromFile takes a filename as string and returns Recipes
-func NewBeerXmlFromFile2(f string) (bxml *BeerXml2, err error) {
+func NewBeerXmlFromFile2(f string) (bxml *BeerXML2, err error) {
 	xmlFile, err := os.Open(f)
 	if err != nil {
 		return nil, err
 	}
 	defer xmlFile.Close()
-	return NewBeerXml2(xmlFile)
+	return NewBeerXML2(xmlFile)
 }
 
 // TextSummary returns a string with a summary of Recipes including fermentables and hops
-func (bxml *BeerXml2) TextSummaryxml2() string {
+func (bxml *BeerXML2) TextSummaryxml2() string {
 	buf := ""
 	for x := range bxml.Recipes {
 		buf += fmt.Sprintf("Recipe (%d) : %s \n", x, bxml.Recipes[x].Name)
