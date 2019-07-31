@@ -129,6 +129,16 @@ func ConvertXML1to2(xml1 io.Reader, beer2 *BeerXML2) error {
 
 				beer2.HopVarieties = append(beer2.HopVarieties, *pInvHop)
 			}
+			if pInvHop.Humulene == 0 && hop.Humulene != 0 {
+				pInvHop.Humulene = hop.Humulene
+			}
+			if pInvHop.Caryophyllene == 0 && hop.Caryophyllene != 0 {
+				pInvHop.Caryophyllene = hop.Caryophyllene
+			}
+			if pInvHop.Myrcene == 0 && hop.Myrcene != 0 {
+				pInvHop.Myrcene = hop.Myrcene
+			}
+
 			pInvHop.Inventory.AddHopAmount(hop.Amount, "Kg", hop.Form)
 		}
 

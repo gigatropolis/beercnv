@@ -21,16 +21,17 @@ import (
 // $.map($('.recipe-link'), m=>m.href).forEach(recipe=>{window.open(`${recipe}.xml`, '_blank')})
 
 func main() {
-	allXML := beercnv.BeerXml{}
+	allXML := beercnv.BeerXML{}
 	//beer2 := beercnv.BeerXml2{}
 	//path := "../recipes/public"
 	//path := "../recipes/recipe3/recipe3"
-	path := "../recipes/home"
+	path := "../recipes/all"
+	//path := "../recipes/home"
 
-	//outName := "AllRecipes.xml"
-	//outName2 := "AllRecipes.xml"
-	outName := "home.xml"
-	outName2 := "home2.xml"
+	outName := "AllRecipes1.xml"
+	outName2 := "AllRecipes2.xml"
+	//outName := "home.xml"
+	//outName2 := "home2.xml"
 
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -49,7 +50,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			beer, err := beercnv.NewBeerXmlFromFile(pathXML)
+			beer, err := beercnv.NewBeerXMLFromFile(pathXML)
 			if err != nil {
 				fmt.Printf("no xml object from %s", file.Name())
 				continue
@@ -78,7 +79,7 @@ func main() {
 
 	out.Close()
 
-	beer2 := beercnv.BeerXml2{}
+	beer2 := beercnv.BeerXML2{}
 
 	xmlFile, err := os.Open(outName)
 
